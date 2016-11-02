@@ -66,6 +66,23 @@ def edit_restaurant(resname, resid):
         print "Could not update restaurant name"
         return "Failed"
 
+def delete_restaurant(resid):
+    print "Function called with %d" % resid
+    try:
+        session = create_db_connection('restaurantmenu.db')
+        restaurant = session.query(Restaurant).filter_by(id=resid).one()
+        resname = restaurant.name
+        session.delete(restaurant)
+        print "Deleted restaurant in session"
+        session.commit()
+        print "Session committed"
+        session.close()
+        print "Restaurant %s deleted" % resname
+        return "Success"
+    except:
+        print "Could not update restaurant name"
+        return "Failed"
+
 
 class webserverHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -117,7 +134,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                     output += restaurant.name
                     output += '<br>'
                     output += '<a href="/restaurants/%d/edit">Edit</a><br>' % restaurant.id
-                    output += '<a href="#">Delete</a><br><br>'
+                    output += '<a href="/restaurants/%d/delete">Delete</a><br><br>' % restaurant.id
                 output += '</body></html>'
 
                 self.wfile.write(output)
@@ -153,9 +170,30 @@ class webserverHandler(BaseHTTPRequestHandler):
                             </h2><input name="restaurant_id" type="hidden" \
                             value="%d"><input name="restaurant_name" \
                             type="text" value="%s"><input type="submit" \
-                            value="submit"> </form>' % (self.path,
+                            value="edit"> </form>' % (self.path,
                                                         restaurant.id,
                                                         restaurant.name)
+                output += '</body></html>'
+                self.wfile.write(output)
+                print output
+                return
+
+            if self.path.endswith("/delete"):
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                restaurant_id = self.path.split('/')[2]
+                restaurant = get_restaurant_by_id(int(restaurant_id))
+                output = ""
+                output += '<html><body>'
+                output += '<form method="POST" enctype="multipart/form-data" \
+                            action="%s"><h2>Are you sure that you want to \
+                            delete %s from the database?</h2><input \
+                            name="restaurant_id" type="hidden" value="%d"> \
+                            <input type="submit" \
+                            value="delete"> </form>' % (self.path,
+                                                        restaurant.name,
+                                                        restaurant.id)
                 output += '</body></html>'
                 self.wfile.write(output)
                 print output
@@ -192,10 +230,8 @@ class webserverHandler(BaseHTTPRequestHandler):
                 print "Editing restaurant name"
 
                 ctype, pdict = cgi.parse_header(self.headers.getheader('Content-type'))
-                print "ctype, pdict retrieved"
                 if ctype == 'multipart/form-data':
                     fields = cgi.parse_multipart(self.rfile, pdict)
-                    print "fields exist"
                     restaurant_name = fields.get('restaurant_name')
                     print restaurant_name[0]
                     restaurant_id = fields.get('restaurant_id')
@@ -205,6 +241,28 @@ class webserverHandler(BaseHTTPRequestHandler):
                     print "New restaurant name found: %s" % restaurant_name[0]
                     try:
                         result = edit_restaurant(restaurant_name[0], int(restaurant_id[0]))
+                        print result
+                        self.send_response(301)
+                        self.send_header('Content-type', 'text/html')
+                        self.send_header('Location', '/restaurants')
+                        self.end-headers()
+
+                    except:
+                        print "there was a problem and the restaurant was not changed"
+
+            if self.path.endswith('/delete'):
+                print "About to delete restaurant from db"
+
+                ctype, pdict = cgi.parse_header(self.headers.getheader('Content-type'))
+                if ctype == 'multipart/form-data':
+                    fields = cgi.parse_multipart(self.rfile, pdict)
+                    restaurant_id = fields.get('restaurant_id')
+                    print restaurant_id[0]
+
+                if restaurant_id:
+                    print "Restaurant ID found: %s" % restaurant_id[0]
+                    try:
+                        result = delete_restaurant(int(restaurant_id[0]))
                         print result
                         self.send_response(301)
                         self.send_header('Content-type', 'text/html')
