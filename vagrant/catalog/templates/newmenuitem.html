@@ -5,54 +5,34 @@ SO HUNGRY! - Add menu item
 {% endblock %}
 
 {% block content %}
-  <h2>Add a menu item to {{restaurant.name}}'s menu</h2>
-  <div class="item-form">
-    <form action="#" method="POST">
-      <table class="item-form-table">
-        <tr>
-          <td>
-            <label for="name">Name: </label>
-          </td>
-          <td>
-            <input type="text" name="name">
-          </td>
-        </tr>
+<div class="menu frame row">
+  <section class="col-xs-12 subheader">
+    <h2 class="restaurant-name">{{restaurant.name}}</h2>
+  </section>
 
-        <tr>
-          <td>
-            <label for="course">Course: </label>
-          </td>
-          <td>
-            <select name="course">
-              <option value="beverage">Beverage</option>
-              <option value="appetizer">Appetizer</option>
-              <option value="entree">Entree</option>
-              <option value="dessert">Dessert</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label for="description">Description: </label>
-          </td>
-          <td>
-            <textarea name="description" class="item-description"></textarea>
-          </td>
-          <tr>
-            <td>
-              <label for="price">Price: </label>
-            </td>
-            <td>
-              <input type="text" name="price">
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="submit" value="Add item">
-            </td>
-          </tr>
-        </table>
+  <section class="col-xs-12 add-menu">
+  <p class="page-description">Add a menu item to {{restaurant.name}}'s menu</p>
+    <form action="{{url_for('newMenuItem', restaurant_id=restaurant.id)}}" method="POST" class="item-form">
+      <label for="name" class="form-label">Name: </label>
+      <input type="text" name="name" class="form-input">
+      <br><br>
+      <label for="course" class="form-label">Course: </label>
+      <select name="course" class="form-select">
+        <option value="beverage">Beverage</option>
+        <option value="appetizer">Appetizer</option>
+        <option value="entree">Entree</option>
+        <option value="dessert">Dessert</option>
+      </select>
+      <br><br>
+      <label for="description" class="form-label">Description: </label>
+      <textarea name="description" class="form-textarea"></textarea>
+      <br><br>
+      <label for="price" class="form-label">Price: </label>
+      <input type="text" name="price" class="form-input">
+      <br><br>
+      <input type="submit" value="Add item" class="form-submit">
     </form>
-  </div>
+</section>
+</div>
 
 {% endblock %}

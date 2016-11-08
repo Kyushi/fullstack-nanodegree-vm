@@ -5,14 +5,17 @@ SO HUNGRY - Add restaurant
 {% endblock %}
 
 {% block content %}
+<div class="restaurant-list frame row">
+  <section class="col-xs-12 subheader">
+    <h2>Add a restaurant<h2>
+  </section>
 
-<div class="restaurantform">
-  <h2>Add a restaurant</h2>
-  <form action="#" method="POST">
-    <label for="name">Enter name: </label>
-    <input type="text" name="name">
-    <input type="submit" value="Submit">
+<div class="col-xs-12 restaurantform item-form">
+  <form action="{{url_for('newRestaurant')}}" method="POST">
+    <label for="name" class="form-label">Enter name: </label>
+    <input type="text" name="name" class="form-input">
+    <br><br>
+    <input type="submit" value="Submit" class="form-submit">
   </form>
 </div>
-
 {% endblock %}

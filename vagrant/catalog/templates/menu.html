@@ -13,13 +13,15 @@ SO HUNGRY! - {{restaurant.name}}
       </a>
     </section>
 
-    <section>
+    <section class="menu">
       {% for item in menu %}
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
           <div class="menu-item">
-            <p class="item-name">{{item.name}}</p>
-            <p class="item-description">{{item.description}}</p>
-            <p class="item-price">{{item.price}}</p>
+            <div role="button" class="modal-link" data-toggle="modal" data-target="#{{item.id}}-modal">
+              <p class="item-name">{{item.name}}</p>
+              <p class="item-description">{{item.description}}</p>
+              <p class="item-price">{{item.price}}</p>
+            </div>
             <ul class="edit-delete-ul">
               <li class="edit-delete-li">
                 <a href="{{url_for('editMenuItem', restaurant_id=restaurant.id, menu_id=item.id)}}" class="edit-delete">
@@ -34,7 +36,32 @@ SO HUNGRY! - {{restaurant.name}}
             </ul>
           </div>
         </div>
+
+        <!-- modal -->
+        <div id="{{item.id}}-modal" class="modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel-st">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title item-name"  id="gridSystemModalLabel-st">{{item.name}}</h4>
+            </div>
+            <div class="modal-body">
+              <p class="item-description-modal">
+                {{item.description}}
+              </p>
+            </div>
+            <div class="modal-footer">
+              <p class="item-link-modal item-price">
+                {{item.price}}
+              </p>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <!-- end of modal -->
       {% endfor %}
     </section>
   </div>
+
+
 {% endblock %}

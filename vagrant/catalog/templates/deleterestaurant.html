@@ -5,12 +5,18 @@ SO HUNGRY! - Delete restaurant
 {% endblock %}
 
 {% block content %}
-<h2>Delete restaurant {{restaurant.name}}</h2>
-<form action="#" method="POST">
-  <p class="warning">
-    Are you sure that you want to delete {{restaurant.name}} and its menu from the
-    database?
-  </p>
-  <input type="submit" value="Delete forever">
-</form>
+<div class="restaurant-list frame row">
+  <section class="col-xs-12 subheader">
+    <h2>Remove {{restaurant.name}}<h2>
+  </section>
+
+<div class="col-xs-12 restaurantform item-form">
+  <form action="{{url_for('deleteRestaurant', restaurant_id=restaurant.id)}}" method="POST">
+    <p class="warning">
+      Are you sure that you want to delete {{restaurant.name}} and its menu from the
+      database?
+    </p>
+    <input type="submit" value="Delete forever" class="delete-button">
+  </form>
+</div>
 {% endblock %}
