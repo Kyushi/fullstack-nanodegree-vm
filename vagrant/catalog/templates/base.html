@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/bootstrap.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>
+      {% block title %}
+        SO HUNGRY!
+      {% endblock %}
+    </title>
+  </head>
+
+  <body>
+    <div class="container">
+
+    <header>
+      <h1><a href="{{url_for('showRestaurants')}}">SO HUNGRY!</a></h1>
+    </header>
+
+    <!-- flash messages -->
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+
+        <div class="row">
+          {% for message in messages %}
+            <div class="col-xs-12 message-flash">{{message}}</div>
+          {% endfor %}
+        </div>
+        <br>
+        {% endif %}
+      {% endwith %}
+
+    <!-- content clock -->
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+
+</html>

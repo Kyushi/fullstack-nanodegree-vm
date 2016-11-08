@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+SO HUNGRY! - Delete restaurant
+{% endblock %}
+
+{% block content %}
+<h2>Delete restaurant {{restaurant.name}}</h2>
+<form action="#" method="POST">
+  <p class="warning">
+    Are you sure that you want to delete {{restaurant.name}} and its menu from the
+    database?
+  </p>
+  <input type="submit" value="Delete forever">
+</form>
+{% endblock %}

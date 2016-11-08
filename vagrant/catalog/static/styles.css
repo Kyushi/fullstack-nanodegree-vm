@@ -1,0 +1,114 @@
+/* Default styles */
+
+body {
+  font-family: Arial, sans-serif;
+  /*font-size: 14px;*/
+  background: #130C1F;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  color: #FF8C8C;
+  font-size: 42px;
+  font-family: "Questa Grande", Times, serif;
+}
+
+h2 {
+  color: #49157D;
+  font-size: 24px;
+}
+
+h3 {
+  color: #451F1F;
+  font-size: 20px;
+}
+
+textarea {
+  width: 100%;
+  max-width: 480px;
+  height: 200px;
+  padding: 0.5em;
+}
+
+.frame {
+  margin-top: 2em;
+  border: 1px solid #0D0000;
+  border-radius: 1em;
+  background: #E9BF51;
+}
+
+/*sub heading styles */
+.subheader {
+  width: 100%;
+  text-align: center;
+}
+
+.restaurant-name {
+  font-size: 48px;
+  font-family: "Questa Grande";
+}
+/* Item box styles */
+
+.menu-item {
+  border-radius: 0.8em;
+  height: 250px;
+  background: #7C0000;
+  padding: 1em;
+  margin: 1em 0;
+}
+
+.item-name {
+  color: #FBD800;
+  font-weight: 600;
+  font-size: 1.5em;
+}
+
+.item-price {
+  color: #f7c6f1;
+  font-size: 1.3em;
+  font-style: italic;
+}
+
+.item-description {
+  color: #fdfded;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edit-delete-ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.edit-delete-li {
+  float: left;
+}
+
+.edit-delete {
+  color: #4d82eb;
+  text-decoration: underline;
+  display: block;
+  padding-right: 1em;
+  /*border: solid 1px #fff;*/
+}
+
+.edit-delete:hover {
+  color: #95fbf2;
+}
+
+/* item form */
+
+.item-form {
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
+}

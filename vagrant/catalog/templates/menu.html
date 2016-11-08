@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}
+SO HUNGRY! - {{restaurant.name}}
+{% endblock %}
+
+{% block content %}
+  <div class="menu frame row">
+    <section class="col-xs-12 subheader">
+      <h2 class="restaurant-name">{{restaurant.name}}</h2>
+      <a href="{{url_for('newMenuItem', restaurant_id=restaurant.id)}}">
+        Add menu item
+      </a>
+    </section>
+
+    <section>
+      {% for item in menu %}
+        <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="menu-item">
+            <p class="item-name">{{item.name}}</p>
+            <p class="item-description">{{item.description}}</p>
+            <p class="item-price">{{item.price}}</p>
+            <ul class="edit-delete-ul">
+              <li class="edit-delete-li">
+                <a href="{{url_for('editMenuItem', restaurant_id=restaurant.id, menu_id=item.id)}}" class="edit-delete">
+                  Edit
+                </a>
+              </li>
+              <li class="edit-delete-li">
+                <a href="{{url_for('deleteMenuItem', restaurant_id=restaurant.id, menu_id=item.id)}}" class="edit-delete">
+                  Delete
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      {% endfor %}
+    </section>
+  </div>
+{% endblock %}

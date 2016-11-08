@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+SO HUNGRY! - All Restaurants
+{% endblock %}
+
+{% block content %}
+<h2>Browse our restaurants</h2>
+<div class="add-link">
+  <a href="{{url_for('newRestaurant')}}">Add restaurant</a>
+</div>
+
+{% for r in restaurants %}
+<div class="restaurants">
+    <h2><a href="{{url_for('showMenu', restaurant_id=r.id)}}">{{r.name}}</a></h2>
+    <ul>
+      <li>
+        <a href="{{url_for('editRestaurant', restaurant_id=r.id)}}">Edit</a>
+      </li>
+
+      <li>
+        <a href="{{url_for('deleteRestaurant', restaurant_id=r.id)}}">Delete</a>
+      </li>
+    </ul>
+</div>
+{% endfor %}
+
+
+{% endblock %}

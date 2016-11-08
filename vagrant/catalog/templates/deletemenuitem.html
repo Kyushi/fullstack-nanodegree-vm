@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+SO HUNGRY! - Delete menu item
+{% endblock %}
+
+{% block content %}
+<h2>Delete {{item.name}} from {{restaurant.name}}'s menu</h2>
+<div class="delete-form">
+  <form action="#" method="POST">
+    <p class="warning">
+      Are you sure that you want to delete {{item.name}} from {{restaurant.name}}'s menu?
+    </p>
+    <input type="submit" value="Delete forever">
+  </form>
+</div>
+{% endblock %}
