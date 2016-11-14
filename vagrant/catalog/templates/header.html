@@ -1,0 +1,33 @@
+<header class="row">
+  <div class="col-xs-12 flash-login-bar">
+    <!-- flash messages -->
+    <div class="col-xs-8 message-flash">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            {{message}}
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+    <!-- Login/logout link -->
+    <div class="col-xs-4 text-right login-link">
+      {% if 'user_id' in session %}
+        <p>Logged in as: {{session['username']}}</p>
+        <a href="{{url_for('logout')}}">Log out</a>
+      {% else %}
+        <a href="{{url_for('login')}}">
+          Log In or Sign Up
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-xs-6 title">
+    <a href="{{url_for('index')}}">
+      <h1>PeMoI</h1>
+    </a>
+  </div>
+  <div class="col-xs-12 subtitle">
+    <h3>Personal Museum of Inspiration</h3>
+  </div>
+</header>

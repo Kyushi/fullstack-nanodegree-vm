@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="category-name">
+  <h2>{{category.name}}</h2>
+</div>
+{% for item in items %}
+{% include 'itembox.html' %}
+{% endfor %}
+{% endblock %}

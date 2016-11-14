@@ -1,4 +1,4 @@
-# PeMOI #
+# PeMoI #
 
 ## Your Personal Museum of Inspiration ##
 

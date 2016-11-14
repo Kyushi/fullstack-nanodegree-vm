@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if user %}
+
+<div class="row banner menu">
+  <div class="col-md-11 col-md-offset-1 padding-none">
+    <h1>Your info
+    <figure class="creator">
+      <img src="{{session['picture']}}" class="profile-pic-preview">
+      <figcaption>{{user.name}}</figcaption>
+    </figure>
+    </h1>
+
+  </div>
+</div>
+
+<section class="userinfo row">
+  <table class="col-xs-12">
+    <tr>
+      <td class="col-xs-4">
+        User ID:
+      </td>
+      <td>
+        {{user.id}}
+      </td>
+    </tr>
+    <tr>
+      <td class="col-xs-4">
+        User name:
+      </td>
+      <td>
+        {{user.username}}
+      </td>
+    </tr>
+    <tr>
+      <td class="col-xs-4">
+        Provider:
+      </td>
+      <td>
+        {{session['provider']}}
+      </td>
+    </tr>
+    <tr>
+      <td class="col-xs-4">
+        E-mail:
+      </td>
+      <td>
+        {{user.email}}
+      </td>
+    </tr>
+    <tr>
+      <td class="col-xs-4">
+        Register date:
+      </td>
+      <td>
+        {{user.register_date}}
+      </td>
+    </tr>
+    <tr>
+      <td class="col-xs-4">
+        About you:
+      </td>
+      <td>
+        {{user.about}}
+      </td>
+    </tr>
+  </table>
+{% else %}
+<h2>You are not logged in</h2>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Welcome to your Personal Museum Of Interest</h2>
+<div class="categories">
+  <p>Select a category:<br>
+    {% for category in categories %}
+      <div class="category-box col-xs-4 col-md-2 col-lg-1">
+        <h4>{{category.name}}</h4>
+      </div>
+      {% endfor %}
+  </p>
+  {% for item in items %}
+    {% include 'itembox.html' %}
+  {% endfor %}
+{% endblock %}

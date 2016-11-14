@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="row login-section">
+<!-- Google plus sign in -->
+  <div id="col-xs-12 signinButton">
+    <span class="g-signin"
+      data-scope="openid email"
+      data-clientid="1068528154047-7nb2sq54q904v3us1b5u2mirrdtstmma.apps.googleusercontent.com"
+      data-redirecturi="postmessage"
+      data-accesstype="offline"
+      data-cookiepolicy="single_host_origin"
+      data-callback="signInCallback"
+      data-approvalprompt="force">
+    </span>
+  </div>
+
+<!-- FB login button -->
+<fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+  <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+
+</fb:login-button>
+
+<!-- Div to display result of login process -->
+  <div id="result"></div>
+</section>
+
+{% endblock %}
+
+{% block script %}
+<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $state = "{{STATE}}"
+  })
+</script>
+{% endblock %}

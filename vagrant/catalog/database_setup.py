@@ -19,8 +19,10 @@ class User(Base):
     id: Primary key, auto-genereated, incremental integer
     name: User's real name or name from Google Plus, Facebook, Twitter, github
           (if implemented)
-    username: User name, chosen by user, used for display on website
-    email: User's e-mail address.
+    username: User name, chosen by user, used for display on website, unique
+    email: User's e-mail address, unique value
+    picture: Link to profile picture
+    about: Text about  the user, i.e. info about self
     register_date: DateTime of user registration, gets added automatically
 
     All columns are required or auto-generated
@@ -30,6 +32,8 @@ class User(Base):
     name = Column(String(100), nullable=False)
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(100), nullable=False, unique=True)
+    picture = Column(String(250))
+    about = Column(UnicodeText)
     register_date = Column(DateTime(timezone=True), server_default=func.now())
 
 class Category(Base):
@@ -37,7 +41,8 @@ class Category(Base):
 
     Columns:
     id: Primary key, auto-generated, incremental integer
-    name: Name of the category, must be unique for public categories
+    name: String(100) Name of the category, must be unique for public categories
+    description: String(250) Short description of category
     user_id: Foreign key, user.id from user table
     user: Relationship to User table
     add_date: DateTime of addition, auto-generated
@@ -47,10 +52,11 @@ class Category(Base):
     __tablename__ = "category"
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
+    description = Column(String(250))
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     add_date = Column(DateTime(timezone=True), server_default=func.now())
-    public = Column(Boolean)
+    public = Column(Boolean, default=False)
 
     @property
     def serialize(self):
@@ -89,10 +95,11 @@ class Item(Base):
     add_date = Column(DateTime(timezone=True), server_default = func.now())
     edit_date = Column(DateTime(timezone=True), onupdate = func.now())
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = Relationship('Category')
+    category = relationship('Category')
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = Relationship('User')
-    public = Column(Boolean)
+    username = Column(String(50))
+    user = relationship('User')
+    public = Column(Boolean, default=False)
 
     @property
     def serialize(self):
