@@ -66,7 +66,7 @@ def get_user_info(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
-### not for production ###
+### TODO: Remove before going live! not for production ###
 # Force clear old session
 @app.route('/clearSession')
 def clearSession():
@@ -74,13 +74,9 @@ def clearSession():
     return "Session cleared"
 
 # helper page to show session details
-@app.route('/userinfo/')
-def userinfo():
-    if 'user_id' in login_session:
-        user = session.query(User).filter_by(id=login_session['user_id']).one()
-    else:
-        user = None
-    return render_template('userinfo.html', user=user)
+@app.route('/login_session/')
+def show_session():
+    return render_template('session.html')
 ### ---------- ###
 
 @app.route('/')
@@ -253,6 +249,15 @@ def fbconnect():
     flash("Thanks for logging in, %s" % login_session['username'])
     return user.username
 
+# Facebook disconnect function
+@app.route('/fbdisconnect')
+def fbdisconnect():
+    facebook_id = login_session['facebook_id']
+    url = 'https://graph.facebook.com/%s/permissions' % facebook_id
+    h = httplib2.Http()
+    result = h.request(url, 'DELETE')[1]
+    return "You've been logged out"
+
 @app.route('/completesignup/', methods=['GET', 'POST'])
 def complete_signup():
     if request.method == 'POST':
@@ -270,6 +275,8 @@ def logout():
     provider = login_session['provider']
     if provider == 'Google':
         gdisconnect()
+    elif provider == 'Facebook':
+        fbdisconnect()
     login_session.clear()
     flash("You have been logged out. Come back soon!")
     return redirect('/')
@@ -280,7 +287,12 @@ def privacy():
 
 @app.route('/profile/<int:user_id>/')
 def show_profile(user_id):
-    return "This will show user %s's profile" % user_id
+    if 'user_id' in login_session:
+
+        user = session.query(User).filter_by(id=login_session['user_id']).one()
+    else:
+        user = None
+    return render_template('profile.html', user=user)
 
 @app.route('/profile/<int:user_id>/edit/')
 def edit_profile(user_id):
@@ -293,8 +305,11 @@ def delete_profile(user_id):
 
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
-    category = session.query(Category).filter_by(id=category_id).one()
-    print "Category: %s" % category.name
+    try:
+        category = session.query(Category).filter_by(id=category_id).one()
+    except:
+        flash("This category does not exist yet")
+        return redirect('/')
     if category.public or category.user_id==login_session['user_id']:
         print "Querying for items"
         items = session.query(Item).filter(Item.category_id==category.id, Item.public==True).all()
@@ -303,9 +318,6 @@ def show_category(category_id):
     else:
         flash('This is a private category')
         return redirect('/')
-    # except:
-    #     flash("This category doesn't exist")
-    #     return redirect('/')
 
 @app.route('/category/new/', methods=['GET', 'POST'])
 def new_category():
@@ -333,24 +345,41 @@ def new_category():
 def edit_category(category_id):
     try:
         category = session.query(Category).filter_by(id=category_id).one()
-        if 'user_id' not in login_session:
-            flash("Please log in to edit categories.")
-            return redirect('/login')
-        elif login_session['user_id'] != category.user_id:
-            flash("You can only edit categories that you have created yourself")
-            return redirect("/category/%s" % category_id)
-        else:
-            if request.methods == 'POST':
-                pass
-            else:
-                return render_template('editcategory.html', category)
     except:
-        flash('This category does not exist')
+        flash("This category does not exist yet")
         return redirect('/')
+    if 'user_id' not in login_session:
+        flash("Please log in to edit categories.")
+        return redirect('/login')
+    elif login_session['user_id'] != category.user_id:
+        flash("You can only edit categories that you have created yourself")
+        return redirect("/category/%s" % category_id)
+    else:
+        if request.method == 'POST':
+            return
+        else:
+            return render_template('editcategory.html', category=category)
 
 @app.route('/category/<int:category_id>/delete/')
 def delete_category(category_id):
-    return "This will be the page to delete category %s" % category_id
+    try:
+        category = session.query(Category).filter_by(id=category_id).one()
+    except:
+        flash("This category does not exist yet")
+        return redirect('/')
+    if 'user_id' not in login_session:
+        flash("Please log in to delete categories.")
+        return redirect('/login')
+    elif login_session['user_id'] != category.user_id:
+        flash("You can only delete categories that you have created yourself")
+        return redirect("/category/%s" % category_id)
+    else:
+        if request.method == 'POST':
+            session.delete(category)
+            session.commit()
+            return redirect('/')
+        else:
+            return render_template('deletecategory.html', category=category)
 
 @app.route('/inspiration/<int:item_id>/')
 def show_item(item_id):

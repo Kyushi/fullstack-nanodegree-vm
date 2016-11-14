@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+{% for item in session %}
+<p>{{item}}: {{session[item]}}</p>
+{% endfor %}
+{% endblock %}
