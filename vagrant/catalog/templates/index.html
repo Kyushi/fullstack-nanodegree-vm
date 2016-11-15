@@ -11,7 +11,7 @@
             {{category.name}}
           </a>
         </h4>
-        {% if 'user' in session %}
+        {% if 'user_id' in session %}
           {% if category.user_id == session['user_id'] %}
             <a href="{{url_for('edit_category', category_id=category.id)}}">
               Edit

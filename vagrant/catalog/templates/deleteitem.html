@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form class="col-xs-12" method="POST">
+  <p>Are you sure that you want to delete the item {{item_title}}?</p>
+  <input type="submit" value="Delete forever">
+</form>
+{% endblock %}

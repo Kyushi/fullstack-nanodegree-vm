@@ -9,4 +9,16 @@
   <p>{{item.title}}</p>
   <p>{{item.artist}}</p>
   <p>{{item.note}}</p>
+  <div class="edit-delete">
+  {% if 'user_id' in session %}
+    {% if item.user.id == session['user_id'] %}
+    <a href="{{url_for('edit_item', item_id=item.id)}}">
+      Edit
+    </a> |
+    <a href="{{url_for('delete_item', item_id=item.id)}}">
+      Delete
+    </a>
+    {% endif %}
+  {% endif %}
+</div>
 </div>

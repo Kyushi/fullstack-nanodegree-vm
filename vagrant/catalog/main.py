@@ -409,7 +409,7 @@ def new_item():
         item = Item(link=request.form['link'],
                     title=request.form['title'],
                     artist=request.form['artist'],
-                    note=request.form['notes'],
+                    note=request.form['note'],
                     keywords=request.form['keywords'],
                     category_id=request.form['category'],
                     user_id=login_session['user_id'],
@@ -427,22 +427,20 @@ def new_item():
         categories = session.query(Category).filter((Category.public==True)|(Category.user_id==login_session['user_id']))
         return render_template('newitem.html', categories=categories)
 
-@app.route('/inspiration/<int:item_id>/edit/')
+@app.route('/inspiration/<int:item_id>/edit/', methods=['GET', 'POST'])
 def edit_item(item_id):
     if not 'user_id' in login_session:
         return redirect(url_for('login'))
     item = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST' and item.user_id == login_session['user_id']:
-        item = Item(link=request.form['link'],
-                    title=request.form['title'],
-                    artist=request.form['artist'],
-                    note=request.form['notes'],
-                    keywords=request.form['keywords'],
-                    category_id=request.form['category'],
-                    user_id=login_session['user_id'],
-                    public=True if request.form.get('public') else False
-                    )
-        print "Item populated"
+        item.link = request.form['link']
+        item.title = request.form['title']
+        item.artist = request.form['artist']
+        item.note = request.form['note']
+        item.keywords = request.form['keywords']
+        item.category_id = request.form['category']
+        item.user_id = login_session['user_id']
+        item.public = True if request.form.get('public') else False
         session.add(item)
         print "Item added"
         session.commit()
@@ -452,11 +450,24 @@ def edit_item(item_id):
         return redirect(url_for('show_item', item_id=item.id))
     else:
         categories = session.query(Category).filter((Category.public==True)|(Category.user_id==login_session['user_id']))
-        return render_template('edititem.html', categories=categories)
+        return render_template('edititem.html', categories=categories, item=item)
 
-@app.route('/inspiration/<int:item_id>/delete/')
+@app.route('/inspiration/<int:item_id>/delete/', methods=['GET', 'POST'])
 def delete_item(item_id):
-    return "This will be the page to delete item %s" % item_id
+    if not 'user_id' in login_session:
+        return redirect(url_for('login'))
+    item = session.query(Item).filter_by(id=item_id).one()
+    item_title = item.title
+    if item.user_id != login_session['user_id']:
+        flash("You can only delete your own items!<br>")
+        return redirect(url_for('show_item', item_id=item_id))
+    if request.method == 'POST':
+        session.delete(item)
+        session.commit()
+        flash("Item %s deleted!" % item_title)
+        return redirect('/')
+    else:
+        return render_template('deleteitem.html', item_title=item_title)
 
 # Start app
 if __name__ == '__main__':
