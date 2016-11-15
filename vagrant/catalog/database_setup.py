@@ -35,6 +35,8 @@ class User(Base):
     picture = Column(String(250))
     about = Column(UnicodeText)
     register_date = Column(DateTime(timezone=True), server_default=func.now())
+    categories = relationship('Category', back_populates='user')
+    items = relationship('Item', back_populates='user')
 
 class Category(Base):
     """Category class for the category table
@@ -54,7 +56,7 @@ class Category(Base):
     name = Column(String(100), nullable=False)
     description = Column(String(250))
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
+    user = relationship('User', back_populates="categories")
     add_date = Column(DateTime(timezone=True), server_default=func.now())
     public = Column(Boolean, default=False)
 
@@ -97,8 +99,7 @@ class Item(Base):
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship('Category')
     user_id = Column(Integer, ForeignKey('user.id'))
-    username = Column(String(50))
-    user = relationship('User')
+    user = relationship('User', back_populates="items")
     public = Column(Boolean, default=False)
 
     @property
