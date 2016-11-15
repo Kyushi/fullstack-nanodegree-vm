@@ -11,7 +11,7 @@ from flask import Flask, \
                   flash, \
                   session as login_session
 
-from sqlalchemy import create_engine, asc
+from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
@@ -77,6 +77,11 @@ def clearSession():
 @app.route('/login_session/')
 def show_session():
     return render_template('session.html')
+
+@app.route('/allitems/')
+def show_all_items():
+    items = session.query(Item).all()
+    return render_template('showallitems.html', items=items)
 ### ---------- ###
 
 @app.route('/')
@@ -84,7 +89,7 @@ def show_session():
 def index():
     user_id = login_session.get("user_id")
     categories = session.query(Category).filter((Category.public==True)| (Category.user_id==user_id)).all()
-    items = session.query(Item).filter((Item.public==True)| (Item.user_id==user_id)).all()
+    items = session.query(Item).filter((Item.public==True)| (Item.user_id==user_id)).order_by(desc(Item.add_date)).all()
     return render_template('index.html', categories=categories, items=items)
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -314,7 +319,7 @@ def show_category(category_id):
         print "Querying for items"
         items = session.query(Item).filter(Item.category_id==category.id, Item.public==True).all()
         print "Query successful. Items found: %s" % len(items)
-        return render_template('showitems.html', category=category, items=items)
+        return render_template('showcategory.html', category=category, items=items)
     else:
         flash('This is a private category')
         return redirect('/')
@@ -356,11 +361,16 @@ def edit_category(category_id):
         return redirect("/category/%s" % category_id)
     else:
         if request.method == 'POST':
-            return
+            category.name = request.form['name']
+            category.description = request.form['description']
+            category.public = True if request.form.get('public') else False
+            session.add(category)
+            session.commit()
+            return redirect("/category/%s" % category_id)
         else:
             return render_template('editcategory.html', category=category)
 
-@app.route('/category/<int:category_id>/delete/')
+@app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
 def delete_category(category_id):
     try:
         category = session.query(Category).filter_by(id=category_id).one()
@@ -381,17 +391,68 @@ def delete_category(category_id):
         else:
             return render_template('deletecategory.html', category=category)
 
-@app.route('/inspiration/<int:item_id>/')
+@app.route('/inspiration/<int:item_id>/', methods=['GET', 'POST'])
 def show_item(item_id):
-    return "This will show item %s" % (item_id)
+    item = session.query(Item).filter_by(id=item_id).one()
+    if item.public or item.user_id == login_session.get('user_id'):
+        return render_template('showitem.html', item=item)
+    else:
+        flash("This item is not public and/or belongs to somebody else.")
+        return redirect('/')
 
-@app.route('/inspiration/new/')
+@app.route('/inspiration/new/', methods=['GET', 'POST'])
 def new_item():
-    return "This will be the place to create a new item"
+    if not 'user_id' in login_session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        print "POST request received"
+        item = Item(link=request.form['link'],
+                    title=request.form['title'],
+                    artist=request.form['artist'],
+                    note=request.form['notes'],
+                    keywords=request.form['keywords'],
+                    category_id=request.form['category'],
+                    user_id=login_session['user_id'],
+                    public=True if request.form.get('public') else False
+                    )
+        print "Item populated"
+        session.add(item)
+        print "Item added"
+        session.commit()
+        print "Session committed"
+        flash("Inspiration successfully saved")
+        session.refresh(item)
+        return redirect(url_for('show_item', item_id=item.id))
+    else:
+        categories = session.query(Category).filter((Category.public==True)|(Category.user_id==login_session['user_id']))
+        return render_template('newitem.html', categories=categories)
 
 @app.route('/inspiration/<int:item_id>/edit/')
 def edit_item(item_id):
-    return "This will be the page to edit item %s" % item_id
+    if not 'user_id' in login_session:
+        return redirect(url_for('login'))
+    item = session.query(Item).filter_by(id=item_id).one()
+    if request.method == 'POST' and item.user_id == login_session['user_id']:
+        item = Item(link=request.form['link'],
+                    title=request.form['title'],
+                    artist=request.form['artist'],
+                    note=request.form['notes'],
+                    keywords=request.form['keywords'],
+                    category_id=request.form['category'],
+                    user_id=login_session['user_id'],
+                    public=True if request.form.get('public') else False
+                    )
+        print "Item populated"
+        session.add(item)
+        print "Item added"
+        session.commit()
+        print "Session committed"
+        flash("Inspiration successfully saved")
+        session.refresh(item)
+        return redirect(url_for('show_item', item_id=item.id))
+    else:
+        categories = session.query(Category).filter((Category.public==True)|(Category.user_id==login_session['user_id']))
+        return render_template('edititem.html', categories=categories)
 
 @app.route('/inspiration/<int:item_id>/delete/')
 def delete_item(item_id):

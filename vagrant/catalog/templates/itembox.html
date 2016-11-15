@@ -1,7 +1,12 @@
 <div class="col-xs-12 item-box">
-  <p> Added by {{item.user_id}} </p>
+  <div class="col-xs-12 user-box">
+    <div class="profile-pic-frame">
+      <img src="{{item.user.picture}}" class="profile-pic">
+    </div>
+    <span> Added by {{item.user.username}} </span>
+  </div>
   <img src="{{item.link}}" class="item-img"><br>
   <p>{{item.title}}</p>
   <p>{{item.artist}}</p>
-  <p>{{item.note}}<p>
+  <p>{{item.note}}</p>
 </div>

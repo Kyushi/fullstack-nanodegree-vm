@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for item in items %}
+<div class="col-xs-12 item-box">
+  <div class="col-xs-12 user-box">
+    <div class="profile-pic-frame">
+      <img src="{{item.user.picture}}" class="profile-pic">
+    </div>
+    <span> Added by {{item.user.username}}, ID {{session['user_id']}} </span>
+  </div>
+  <img src="{{item.link}}" class="item-img"><br>
+  <p>ID: {{item.id}}</p>
+  <p>Title: {{item.title}}</p>
+  <p>Artist: {{item.artist}}</p>
+  <p>Note: {{item.note}}</p>
+  <p>Category: ID {{item.category_id}}, {{item.category.name}}</p>
+  <p>Keywords: {{item.keywords}}</p>
+  <p>Added date: {{item.add_date}}</p>
+  <p>Edited date: {{item.edit_date}}</p>
+  <p>Public: {{item.public}}</p>
+  <p>User: ID {{item.user_id}}, {{item.user.username}}</p>
+</div>
+{% endfor %}
+{% endblock %}
