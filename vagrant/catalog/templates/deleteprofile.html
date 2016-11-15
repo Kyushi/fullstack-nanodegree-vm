@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="delete-profile row">
+  <h2>Are you sure that you want to delete your profile, {{user.name}}?</h2>
+  <p>If you delete your profile, you will also permanently delete
+    <ul>
+      <li>Your complete profile data (View <a href="{{url_for('show_profile', user_id=user.id)}}">here</a>)</li>
+      <li>All your private categories (public ones cannot be deleted)</li>
+      <li>All your inspirations, public or private.</li>
+    </ul>
+    Deleting your data cannot be undone, the data is erased from the database permanently.<br>
+    You can always sign up again later.
+  </p>
+  <div class="categories">
+    These are your private categories:
+    {% for category in categories %}
+    <div class="category-box col-xs-4 col-md-2 col-lg-2">
+      <h4>
+        <a href="{{url_for('show_category', category_id=category.id)}}">
+          {{category.name}}
+        </a>
+        <p>{{category.description}}</p>
+      </h4>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="items">
+    These are your items:
+    {% for item in items %}
+      {% include 'itembox.html' %}
+    {% endfor %}
+  </div>
+  <form method="POST">
+    <input type="submit" value="I'm done with inspiration, delete this account forever">
+  </form>
+{% endblock %}

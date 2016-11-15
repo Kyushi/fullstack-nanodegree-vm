@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<section class="userinfo row">
+  <div class="col-md-11 padding-none">
+    <h1>Edit your profile, {{user.username}}</h1>
+    <figure class="creator">
+      <img src="{{user.picture}}" class="profile-pic-preview">
+      <figcaption>{{user.username}}</figcaption>
+    </figure>
+
+  </div>
+
+  <form class="profile-edit-form col-xs-12" method="POST">
+
+    <label class="col-xs-3">
+      Your real name:
+      <input type="text" name="name" value="{{user.name}}">
+    </label>
+    <br>
+    <br>
+    <label class="col-xs-3">
+      Your user name:
+      <input type="text" name="username" value="{{user.username}}">
+    </label>
+    <br>
+    <br>
+    <label class="col-xs-3">
+      Your profile picture:
+      <input type="text" name="picture" value="{{user.picture}}">
+    </label>
+    <br>
+    <br>
+    <label class="col-xs-3">
+      About you:
+      <input type="text" name="about" value="{{user.about}}">
+    </label>
+    <br>
+    <br>
+    <label class="col-xs-3">
+      Your e-mail address:
+      <input type="email" name="email" value="{{user.email}}">
+    </label>
+    <br>
+    <br>
+
+    <input type="submit" value="Save changes">
+  </form>
+</section>
+{% endblock %}

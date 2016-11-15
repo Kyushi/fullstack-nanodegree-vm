@@ -25,7 +25,9 @@
       <p class="col-xs-3">E-mail: </p>
       <p class="col-xs-9">{{session['email']}}</p>
       <p class="col-xs-12">Link to your profile picture at {{session['provider']}}</p>
-      <img src="{{session['picture']}}" class="profile-pic-preview">
+      <div class="col-xs-12 profile-pic-frame-big">
+        <img src="{{session['picture']}}" class="profile-pic-preview">
+      </div>
       <p class="col-xs-12">For more information read our page about
         <a href="{{url_for('privacy')}}">privacy</a>.</p>
       <p class="col-xs-12 disclaimer">By clicking submit you agree to the above</p>

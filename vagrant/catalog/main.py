@@ -39,6 +39,10 @@ session = DBSession()
 app = Flask(__name__)
 app.secret_key = SECRET
 
+
+# TODO: Make sure that each page with an id renders an error if the id does not
+# exist. Redirect to a meaningful page and show flash message
+
 ### User signup/login ###
 
 # Create user entry
@@ -66,6 +70,14 @@ def get_user_info(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
+# Get user categories
+def get_user_categories(user_id, public=False):
+    return session.query(Category).filter((Category.user_id==user_id)&(Category.public==public)).all()
+
+# Get user items
+def get_user_items(user_id):
+    return session.query(Item).filter_by(user_id=user_id).all()
+
 ### TODO: Remove before going live! not for production ###
 # Force clear old session
 @app.route('/clearSession')
@@ -88,8 +100,12 @@ def show_all_items():
 @app.route('/index/')
 def index():
     user_id = login_session.get("user_id")
-    categories = session.query(Category).filter((Category.public==True)| (Category.user_id==user_id)).all()
-    items = session.query(Item).filter((Item.public==True)| (Item.user_id==user_id)).order_by(desc(Item.add_date)).all()
+    try:
+        categories = session.query(Category).filter((Category.public==True)| (Category.user_id==user_id)).all()
+        items = session.query(Item).filter((Item.public==True)| (Item.user_id==user_id)).order_by(desc(Item.add_date)).all()
+    except:
+        categories = None
+        items = None
     return render_template('index.html', categories=categories, items=items)
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -292,21 +308,61 @@ def privacy():
 
 @app.route('/profile/<int:user_id>/')
 def show_profile(user_id):
-    if 'user_id' in login_session:
-
-        user = session.query(User).filter_by(id=login_session['user_id']).one()
-    else:
-        user = None
+    user = get_user_info(user_id)
     return render_template('profile.html', user=user)
 
-@app.route('/profile/<int:user_id>/edit/')
+@app.route('/profile/<int:user_id>/edit/', methods=['GET', 'POST'])
 def edit_profile(user_id):
-    return "This will be the page to edit user %s's profile" % user_id
+    if 'user_id' not in login_session:
+        return redirect('/login')
+    if user_id != login_session['user_id']:
+        flash("You can only edit your own profile")
+        return redirect(url_for('show_profile', user_id=user_id))
+    user = get_user_info(user_id)
+    if request.method == 'POST':
+        name = request.form['name']
+        username = request.form['username']
+        picture = request.form['picture']
+        about = request.form['about']
+        email = request.form['email']
+        user.name = name
+        user.username = username
+        user.picture = picture
+        user.about = about
+        user.email = email
+        login_session['name'] = name
+        login_session['username'] = username
+        login_session['picture'] = picture
+        login_session['email'] = email
+        session.add(user)
+        session.commit()
 
-@app.route('/profile/<int:user_id>/delete/')
+        return redirect(url_for('show_profile', user_id=user.id))
+    else:
+        return render_template('editprofile.html', user=user)
+
+@app.route('/profile/<int:user_id>/delete/', methods=['GET', 'POST'])
 def delete_profile(user_id):
-    return """This will be the page to delete user %s and all their items and
-           categories""" % user_id
+    if not 'user_id' in login_session:
+        return redirect(url_for('login'))
+    if user_id != login_session["user_id"]:
+        flash("You can only delete your own profile.")
+        return redirect(url_for('index'))
+    user = get_user_info(user_id)
+    items = get_user_items(user_id)
+    private_categories = get_user_categories(user_id, False)
+    if request.method == 'POST':
+        for item in items:
+            session.delete(item)
+        for cat in private_categories:
+            session.delete(cat)
+        session.delete(user)
+        session.commit()
+        flash("We are crying bitter tears to see you leaving. Please come back one day.")
+        return redirect(url_for('logout'))
+    else:
+        return render_template('deleteprofile.html', user=user, categories=private_categories, items=items)
+
 
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
@@ -330,7 +386,7 @@ def new_category():
         return redirect('/login')
     if request.method == 'POST':
         print "POST method for new category"
-        public = request.form.get('public')
+        public = True if request.form.get('public') else False
         print public
         category = Category(name=request.form['name'],
                             description=request.form['description'],
@@ -383,6 +439,7 @@ def delete_category(category_id):
     elif login_session['user_id'] != category.user_id:
         flash("You can only delete categories that you have created yourself")
         return redirect("/category/%s" % category_id)
+    # TODO: check if category has items and don't allow deletion
     else:
         if request.method == 'POST':
             session.delete(category)

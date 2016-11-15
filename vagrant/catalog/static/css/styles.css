@@ -29,7 +29,7 @@ h2 {
   color: #AD2B00;
   font-size: 24px; }
 
-h3 {
+h3, .category-name {
   color: #010101;
   font-weight: 100;
   font-size: 18px;
@@ -75,12 +75,24 @@ textarea {
   max-width: 100%; }
 
 .profile-pic-frame {
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  float: left;
+  margin-right: 1em; }
+
+.profile-pic-frame:after {
+  clear: both; }
+
+.profile-pic-frame-big {
+  max-width: 500px;
   overflow: hidden; }
 
 .profile-pic {
   width: 50px; }
+
+.user-box {
+  margin: 0.33em; }
 
 .menu-ul {
   list-style: none; }
@@ -98,7 +110,9 @@ textarea {
 
 .item-box {
   border: 1px solid #D3900F;
-  border-radius: 1em; }
+  border-radius: 1em;
+  padding: 1.33em;
+  margin: 0.67em; }
 
 .category-box {
   border: 1px solid #D3900F;

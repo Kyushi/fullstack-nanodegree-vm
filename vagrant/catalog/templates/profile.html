@@ -1,30 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if user %}
-
-<div class="row banner menu">
-  <div class="col-md-11 col-md-offset-1 padding-none">
-    <h1>Your info
-    <figure class="creator">
-      <img src="{{session['picture']}}" class="profile-pic-preview">
-      <figcaption>{{user.name}}</figcaption>
-    </figure>
-    </h1>
-
-  </div>
-</div>
 
 <section class="userinfo row">
+  <div class="col-md-11 padding-none">
+    <h1>{{user.username}}'s profile {% if user.id == session['user_id'] %}(that's you){% endif %}</h1>
+    <figure class="creator">
+      <img src="{{user.picture}}" class="profile-pic-preview">
+      <figcaption>{{user.username}}</figcaption>
+    </figure>
+
+  </div>
+
   <table class="col-xs-12">
-    <tr>
-      <td class="col-xs-4">
-        User ID:
-      </td>
-      <td>
-        {{user.id}}
-      </td>
-    </tr>
     <tr>
       <td class="col-xs-4">
         User name:
@@ -33,12 +21,10 @@
         {{user.username}}
       </td>
     </tr>
+{% if user.id == session['user_id'] %}
     <tr>
-      <td class="col-xs-4">
-        Provider:
-      </td>
-      <td>
-        {{session['provider']}}
+      <td colspan="2" class="col-xs-12">
+        E-mail address and register date are only visible to you
       </td>
     </tr>
     <tr>
@@ -57,16 +43,15 @@
         {{user.register_date}}
       </td>
     </tr>
+{% endif %}
     <tr>
       <td class="col-xs-4">
-        About you:
+        About:
       </td>
       <td>
         {{user.about}}
       </td>
     </tr>
   </table>
-{% else %}
-<h2>You are not logged in</h2>
-{% endif %}
+</section>
 {% endblock %}
