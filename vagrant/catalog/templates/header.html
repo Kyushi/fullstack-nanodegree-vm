@@ -21,7 +21,11 @@
     <!-- Login/logout link -->
     <div class="col-xs-4 text-right login-link">
       {% if 'user_id' in session %}
-        <p>Logged in as: {{session['username']}}</p>
+        <p>Logged in as:
+          <a href="{{url_for('show_profile', user_id=session['user_id'])}}">
+            {{session['username']}}
+          </a>
+        </p>
         <a href="{{url_for('logout')}}">Log out</a>
       {% else %}
         <a href="{{url_for('login')}}">

@@ -47,6 +47,7 @@ class Category(Base):
     description: String(250) Short description of category
     user_id: Foreign key, user.id from user table
     user: Relationship to User table
+    items: Items by this user (id)
     add_date: DateTime of addition, auto-generated
     public: Boolean, so that the user can decide whether or not to make a
             category public (private is default)
@@ -57,6 +58,7 @@ class Category(Base):
     description = Column(String(250))
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates="categories")
+    items = relationship('Item', back_populates="category")
     add_date = Column(DateTime(timezone=True), server_default=func.now())
     public = Column(Boolean, default=False)
 
@@ -97,7 +99,7 @@ class Item(Base):
     add_date = Column(DateTime(timezone=True), server_default = func.now())
     edit_date = Column(DateTime(timezone=True), onupdate = func.now())
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship('Category')
+    category = relationship('Category', back_populates="items")
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates="items")
     public = Column(Boolean, default=False)

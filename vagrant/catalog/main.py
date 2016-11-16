@@ -23,7 +23,8 @@ from database_setup import Base, \
 
 # import helpers
 from helpers import json_response, \
-                    make_state
+                    make_state, \
+                    verify_username
 
 # import secret
 from secret import SECRET
@@ -110,6 +111,7 @@ def index():
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    # TODO: add more login options
     state = make_state()
     login_session['state'] = state
     return render_template('login.html', STATE = state)
@@ -282,12 +284,22 @@ def fbdisconnect():
 @app.route('/completesignup/', methods=['GET', 'POST'])
 def complete_signup():
     if request.method == 'POST':
-        login_session['username'] = request.form['username']
-        login_session['about'] = request.form['about']
-        user_id = create_user(login_session)
-        login_session['user_id'] = user_id
-        flash("Welcome to your Personal Museum of Inspiration, %s" % login_session['username'])
-        return redirect('index')
+        username = request.form.get('username')
+        users = session.query(User).all()
+        about = request.form['about']
+        if verify_username(username, users):
+            login_session['username'] = username
+            login_session['about'] = about
+            user_id = create_user(login_session)
+            login_session['user_id'] = user_id
+            flash("Welcome to your Personal Museum of Inspiration, %s" % login_session['username'])
+            return redirect('index')
+        else:
+            error = "The username is not available or does not meet specifications"
+            return render_template('signup.html',
+                                   error=error,
+                                   username=username,
+                                   about=about)
     else:
         return render_template('signup.html')
 
@@ -308,8 +320,12 @@ def privacy():
 
 @app.route('/profile/<int:user_id>/')
 def show_profile(user_id):
-    user = get_user_info(user_id)
-    return render_template('profile.html', user=user)
+    try:
+        user = get_user_info(user_id)
+        return render_template('profile.html', user=user)
+    except:
+        flash("This user does not exist")
+        return redirect('/')
 
 @app.route('/profile/<int:user_id>/edit/', methods=['GET', 'POST'])
 def edit_profile(user_id):
@@ -318,28 +334,31 @@ def edit_profile(user_id):
     if user_id != login_session['user_id']:
         flash("You can only edit your own profile")
         return redirect(url_for('show_profile', user_id=user_id))
-    user = get_user_info(user_id)
-    if request.method == 'POST':
-        name = request.form['name']
-        username = request.form['username']
-        picture = request.form['picture']
-        about = request.form['about']
-        email = request.form['email']
-        user.name = name
-        user.username = username
-        user.picture = picture
-        user.about = about
-        user.email = email
-        login_session['name'] = name
-        login_session['username'] = username
-        login_session['picture'] = picture
-        login_session['email'] = email
-        session.add(user)
-        session.commit()
-
-        return redirect(url_for('show_profile', user_id=user.id))
-    else:
-        return render_template('editprofile.html', user=user)
+    try:
+        user = get_user_info(user_id)
+        if request.method == 'POST':
+            name = request.form['name']
+            username = request.form['username']
+            picture = request.form['picture']
+            about = request.form['about']
+            email = request.form['email']
+            user.name = name
+            user.username = username
+            user.picture = picture
+            user.about = about
+            user.email = email
+            login_session['name'] = name
+            login_session['username'] = username
+            login_session['picture'] = picture
+            login_session['email'] = email
+            session.add(user)
+            session.commit()
+            return redirect(url_for('show_profile', user_id=user.id))
+        else:
+            return render_template('editprofile.html', user=user)
+    except:
+        flash("This user does not exist")
+        return redirect('/')
 
 @app.route('/profile/<int:user_id>/delete/', methods=['GET', 'POST'])
 def delete_profile(user_id):
@@ -348,21 +367,24 @@ def delete_profile(user_id):
     if user_id != login_session["user_id"]:
         flash("You can only delete your own profile.")
         return redirect(url_for('index'))
-    user = get_user_info(user_id)
-    items = get_user_items(user_id)
-    private_categories = get_user_categories(user_id, False)
-    if request.method == 'POST':
-        for item in items:
-            session.delete(item)
-        for cat in private_categories:
-            session.delete(cat)
-        session.delete(user)
-        session.commit()
-        flash("We are crying bitter tears to see you leaving. Please come back one day.")
-        return redirect(url_for('logout'))
-    else:
-        return render_template('deleteprofile.html', user=user, categories=private_categories, items=items)
-
+    try:
+        user = get_user_info(user_id)
+        items = get_user_items(user_id)
+        private_categories = get_user_categories(user_id, False)
+        if request.method == 'POST':
+            for item in items:
+                session.delete(item)
+            for cat in private_categories:
+                session.delete(cat)
+            session.delete(user)
+            session.commit()
+            flash("We are crying bitter tears to see you leaving. Please come back one day.")
+            return redirect(url_for('logout'))
+        else:
+            return render_template('deleteprofile.html', user=user, categories=private_categories, items=items)
+    except:
+        flash("This user does not exist")
+        return redirect('/')
 
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
@@ -372,8 +394,7 @@ def show_category(category_id):
         flash("This category does not exist yet")
         return redirect('/')
     if category.public or category.user_id==login_session['user_id']:
-        print "Querying for items"
-        items = session.query(Item).filter(Item.category_id==category.id, Item.public==True).all()
+        items = session.query(Item).filter((Item.category_id==category.id)&((Item.public==True)|(Item.user_id==login_session['user_id']))).all()
         print "Query successful. Items found: %s" % len(items)
         return render_template('showcategory.html', category=category, items=items)
     else:
@@ -385,9 +406,7 @@ def new_category():
     if 'user_id' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        print "POST method for new category"
         public = True if request.form.get('public') else False
-        print public
         category = Category(name=request.form['name'],
                             description=request.form['description'],
                             user_id=login_session['user_id'],
@@ -404,6 +423,7 @@ def new_category():
 
 @app.route('/category/<int:category_id>/edit/', methods={'GET', 'POST'})
 def edit_category(category_id):
+    # TODO: Don't allow making cateegory private after someone else added an item
     try:
         category = session.query(Category).filter_by(id=category_id).one()
     except:
@@ -439,7 +459,9 @@ def delete_category(category_id):
     elif login_session['user_id'] != category.user_id:
         flash("You can only delete categories that you have created yourself")
         return redirect("/category/%s" % category_id)
-    # TODO: check if category has items and don't allow deletion
+    elif category.items:
+        flash("This category has items in it. You can only delete an empty category (There may be private items in there)")
+        return redirect(url_for('show_category', category_id=category_id))
     else:
         if request.method == 'POST':
             session.delete(category)
@@ -462,13 +484,22 @@ def new_item():
     if not 'user_id' in login_session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        print "POST request received"
+        if request.form['category'] == 'None' and request.form['newcategory']:
+            category = Category(name=request.form['newcategory'],
+                                user_id=login_session['user_id'],
+                                public=True if request.form.get('public-category') else False)
+            session.add(category)
+            session.commit()
+            session.refresh(category)
+            category_id = category.id
+        else:
+            category_id = request.form['category']
         item = Item(link=request.form['link'],
                     title=request.form['title'],
                     artist=request.form['artist'],
                     note=request.form['note'],
                     keywords=request.form['keywords'],
-                    category_id=request.form['category'],
+                    category_id=category_id,
                     user_id=login_session['user_id'],
                     public=True if request.form.get('public') else False
                     )
@@ -499,7 +530,7 @@ def edit_item(item_id):
         item.user_id = login_session['user_id']
         item.public = True if request.form.get('public') else False
         session.add(item)
-        print "Item added"
+        print "Item edited"
         session.commit()
         print "Session committed"
         flash("Inspiration successfully saved")

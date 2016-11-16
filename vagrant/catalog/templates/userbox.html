@@ -1,0 +1,7 @@
+<div class="col-xs-12 user-box">
+  <div class="profile-pic-frame">
+    <img src="{{item.user.picture}}" class="profile-pic">
+  </div>
+  <span> Added by {{item.user.username}} on {{item.add_date}}</span><br>
+  <span> <a href="{{url_for('show_profile', user_id=item.user.id)}}">View profile</a></span>
+</div>

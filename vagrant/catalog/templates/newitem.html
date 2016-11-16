@@ -1,22 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!--  TODO: add possiblity to upload item, select between img, video, text, music -->
 <section class="item-section">
-  <form class="item-form row" method="POST">
+  <form class="item-form row" method="POST" action="{{url_for('new_item')}}">
     <label for="category" class="col-xs-12 col-md-2">
       Select a category here:
     </label>
     <select name="category">
+        <option value="None">Select a category</option>
       {% for c in categories %}
         <option value={{c.id}}>{{c.name}}</option>
       {% endfor %}
     </select>
-    <br>
-    <br>
-    <label for="link" class="col-xs-12 col-md-2">
-      Paste link to image here:
+    <label>
+      Or write the name of a new category:
+      <input type="text" name="newcategory" value="{{newcategory}}">
     </label>
-    <input type="text" name="link" class="col-xs-12 col-md-10" placeholder="Only image files">
+    <label>
+      make public
+      <input type="checkbox" name="public-category" value="True">
+    </label>
+    <br>
+    <br>
+    <label class="col-xs-12">
+      Paste link to image here:
+      <input type="text" name="link" placeholder="Only image files">
+    </label>
     <br>
     <br>
     <label for="title" class="col-xs-12 col-md-2">

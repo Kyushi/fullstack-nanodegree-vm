@@ -21,7 +21,15 @@
         {{user.username}}
       </td>
     </tr>
-{% if user.id == session['user_id'] %}
+    <tr>
+      <td class="col-xs-4">
+        About:
+      </td>
+      <td>
+        {{user.about}}
+      </td>
+    </tr>
+  {% if user.id == session['user_id'] %}
     <tr>
       <td colspan="2" class="col-xs-12">
         E-mail address and register date are only visible to you
@@ -43,15 +51,20 @@
         {{user.register_date}}
       </td>
     </tr>
-{% endif %}
-    <tr>
-      <td class="col-xs-4">
-        About:
-      </td>
-      <td>
-        {{user.about}}
-      </td>
-    </tr>
+  {% endif %}
   </table>
+  <br>
+  {% if user.categories %}
+  <h3>Categories:</h3>
+    {% for category in user.category %}
+      {% include 'categorybox.html' %}
+    {% endfor %}
+  {% endif %}
+  <h3>Inspirations</h3>
+  {% if user.items %}
+    {% for item in user.items %}
+      {% include 'itembox.html' %}
+    {% endfor %}
+  {% endif %}
 </section>
 {% endblock %}

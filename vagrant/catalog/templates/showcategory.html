@@ -2,22 +2,29 @@
 
 {% block content %}
 <div class="category-name-box">
-  <span class="category-name">
+  <p class="category-name">
     <a href="{{url_for('show_category', category_id=category.id)}}">
       {{category.name}}
     </a>
-  </span>
-  <span class="category-description">
+  </p>
+  <p class="category-description">
     {{category.description}}
-  </span>
-  <span class="edit-delete">
+  </p>
+  <p class="category-public">
+    {% if category.public %}
+      Public
+    {% else %}
+      Private
+    {% endif %}
+  </p>
+  <p class="edit-delete">
     (<a href="{{url_for('edit_category', category_id=category.id)}}">
       Edit
     </a> |
     <a href="{{url_for('delete_category', category_id=category.id)}}">
       Delete
     </a>)
-  </span>
+  </p>
 </div>
 {% for item in items %}
 {% include 'itembox.html' %}

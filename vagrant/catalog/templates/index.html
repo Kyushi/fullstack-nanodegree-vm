@@ -4,8 +4,10 @@
 <h2>Welcome to your Personal Museum Of Interest</h2>
 <div class="categories">
   <p>Select a category:<br>
+  {% if categories %}
     {% for category in categories %}
-      <div class="category-box col-xs-4 col-md-2 col-lg-2">
+      {% include 'categorybox.html' %}
+      <!-- <div class="category-box col-xs-4 col-md-2 col-lg-2">
         <h4>
           <a href="{{url_for('show_category', category_id=category.id)}}">
             {{category.name}}
@@ -21,10 +23,18 @@
             </a>
           {% endif %}
         {% endif %}
-      </div>
+      </div> -->
       {% endfor %}
+    {% else: %}
+      <h2>There are no categories yet</h2>
+    {% endif %}
   </p>
-  {% for item in items %}
-    {% include 'itembox.html' %}
-  {% endfor %}
+  {% if items %}
+    {% for item in items %}
+      {% include 'itembox.html' %}
+    {% endfor %}
+  {% else %}
+    <h2>There is an emptiness of inspiration here.</h2>
+  {% endif %}
+
 {% endblock %}

@@ -4,18 +4,19 @@
 
 <section class="signup-section">
   {% if 'provider' in session %}
-    <form class="row signup-form" method='POST'>
+    <form class="row signup-form" method='POST' action="{{url_for('complete_signup')}}">
       <label for="username" class="col-xs-12 col-md-2">
         Choose a username (required):
       </label>
-      <input type="text" name="username" class="col-xs-12 col-md-10">
+      <input type="text" name="username" class="col-xs-12 col-md-10" value={{username}}>
+      <p class="error">{{error}}</p>
       <p class="col-xs-12 text-small">
         This username will be displayed with your public posts.
       </p>
       <label for="about" class="col-xs-12">
         Tell us about yourself (optional):
       </label>
-      <textarea name="about" class="col-xs-12"></textarea>
+      <textarea name="about" class="col-xs-12">{{about}}</textarea>
       <p class="col-xs-12">
         We received the following information about you from
         {{session['provider']}}, which we will store in our database.
