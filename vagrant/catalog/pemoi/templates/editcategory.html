@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="category-section">
+  <form class="category-form row" method="POST">
+    <label for="name" class="col-xs-12">
+      Category name:
+      <input type="text" name="name" value="{{category.name}}">
+      {% if error %}
+        <p>{{error}}</p>
+      {% endif %}
+    </label>
+    <label for="description" class="col-xs-12">
+      Give us a short description of this category:
+      <input type="text" name="description" value="{{category.description}}">
+    </label>
+    <label for="public" class="col-xs-12">
+      Make this category public*
+      <input type="checkbox"
+             name="public"
+             value="True"
+             {% if category.public %}
+              checked
+             {% endif %}
+             {% if not category.allow_private() %}
+              disabled
+              title="You can't make a category private if another user has an
+                    item in it."
+             {% endif %}>
+    </label>
+    <br>
+    <br>
+    <input type="submit" value="Add/edit category" class="col-xs-4">
+  </form>
+</section>
+{% endblock %}

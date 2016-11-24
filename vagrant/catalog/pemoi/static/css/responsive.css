@@ -1,0 +1,7 @@
+@media screen and (max-width: 550px) {
+  .login-link {
+    float: left;
+    width: 100%;
+    min-height: 48px; } }
+
+/*# sourceMappingURL=responsive.css.map */

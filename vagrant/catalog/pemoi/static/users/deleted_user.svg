@@ -1,0 +1,15 @@
+<svg width="150" height="150" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <g>
+  <title>background</title>
+  <rect fill="#000000" id="canvas_background" height="152" width="152" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <text stroke="#000000" transform="matrix(1,0,0,1.5357142686843872,0,-4.821428418159485) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_1" y="31" x="7.5" stroke-width="0" fill="#ffffff">this user has</text>
+  <text stroke="#000000" transform="matrix(1.2197957293800528,0,0,2.620217020614115,-18.318560797505654,-135.3105183874619) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_2" y="95" x="22.5" stroke-width="0" fill="#ffffff">left PeMoI</text>
+ </g>
+</svg>

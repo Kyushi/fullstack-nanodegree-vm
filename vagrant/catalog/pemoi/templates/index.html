@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="row">
+  <div class="col-xs-12 headline">
+    <h2>Welcome to your Personal Museum Of Inspiration</h2>
+  </div>
+  {% if items %}
+    {% for item in items %}
+      {% include 'itembox.html' %}
+    {% endfor %}
+  {% else %}
+    <h2>This page is utterly uninspired!</h2>
+  {% endif %}
+</section>
+{% endblock %}
