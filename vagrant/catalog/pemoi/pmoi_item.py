@@ -41,7 +41,6 @@ def serve_file_from_folder(username, filename):
 @app.route('/inspiration/<int:item_id>/json/')
 def item_json(item_id):
     item = db_session.query(Item).filter_by(id=item_id).one()
-    print item.id
     return jsonify(item.serialize)
 
 # Show an individual item
@@ -66,7 +65,6 @@ def new_item():
     if request.method == 'POST':
         link = ''
         file = request.files['file']
-        print "File found: %s" % file.filename
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             path = os.path.join(app.config['UPLOAD_FOLDER'],
@@ -130,9 +128,7 @@ def edit_item(item_id):
         item.user_id = login_session['user_id']
         item.public = True if request.form.get('public') else False
         db_session.add(item)
-        print "Item edited"
         db_session.commit()
-        print "Session committed"
         flash("Inspiration successfully saved")
         db_session.refresh(item)
         return redirect(url_for('show_item', item_id=item.id))
@@ -172,11 +168,8 @@ def delete_file_and_row(item):
     """
     try:
         filename = item.link.rsplit('/', 1)[1]
-        print filename
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], item.user.username, filename))
-        print "Item removed!"
     except:
-        print "No item to remove, %s %s" % (item.id, item.link)
         pass
     db_session.delete(item)
     db_session.commit()

@@ -16,13 +16,11 @@ import pmoi_auth
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     CLIENT_ID = json.loads(open('google_client_secrets.json','r').read())['web']['client_id']
-    print "Starting login process"
     if request.args.get('state') != login_session['state']:
         response = "Invalid STATE parameter"
         return json_response(response, 401)
     # Obtain auth code
     code = request.data
-    print "Received code %s" % code
     try:
         # Upgrade the auth code into a credentials object
         oauth_flow = flow_from_clientsecrets('google_client_secrets.json', scope='')
@@ -38,7 +36,6 @@ def gconnect():
            % access_token)
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
-    print "Token is valid"
 
     # If there is an error in the result, abort mission
     if result.get('error') is not None:
@@ -57,7 +54,6 @@ def gconnect():
         return json_response(response, 401)
 
     #Check to see if user is already logged in
-    print "Checking if user is logged in"
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and stored_gplus_id == gplus_id:
@@ -66,22 +62,18 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
 
     # Store credentials for usage
-    print "Storing credentials"
     login_session['access_token'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
     # Get user Information
-    print "Retrieving user info"
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
     params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
 
     # Receive user information from google's api
     data = answer.json()
-    print "Received %s" % data
 
     # Store interesting stuff in my db_session
-    print "Storing info in login db_session"
     login_session['provider'] = 'Google'
     login_session['name'] = data['name']
     login_session['picture'] = data['picture']
@@ -89,9 +81,7 @@ def gconnect():
 
     # Check if user exists in database
     user_id = pmoi_auth.get_user_id(login_session['email'])
-    print "Found user: %s" % user_id
     if not user_id:
-        print "New user"
         return "new"
     # If yes, get user info from db and welcome user, redirect handled by js
     user = pmoi_auth.get_user_info(user_id)

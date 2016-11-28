@@ -3,7 +3,6 @@
 
   <ul class="menu-ul col-xs-12">
     <li class="menu-li"><a href="{{url_for('index')}}">Home</a></li>
-    <li class="menu-li"><a href="{{url_for('show_session')}}">Login Session</a></li>
     {% if 'user_id' in session %}
     <li class="menu-li holds-sub">
       <a href="{{url_for('show_profile', user_id=session['user_id'])}}">Your profile</a>

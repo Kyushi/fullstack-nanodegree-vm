@@ -112,7 +112,6 @@ def edit_category(category_id):
         return redirect("/category/%s" % category_id)
     else:
         if request.method == 'POST':
-            print request.form
             category.name = request.form['name']
             category.description = request.form['description']
             if category.allow_private():
@@ -121,7 +120,6 @@ def edit_category(category_id):
                 category.public = True
             db_session.add(category)
             db_session.commit()
-            print request.url
             return redirect("/category/%s" % category_id)
         else:
             return render_template('editcategory.html',

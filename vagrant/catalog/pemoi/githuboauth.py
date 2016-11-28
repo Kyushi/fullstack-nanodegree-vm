@@ -21,7 +21,6 @@ from pmoi_db_session import db_session
 def githubconnect():
     # Receive state from github
     state = request.args.get('state')
-    print state
     # If state is not identical to db_session state, return error TODO: proper redirect
     if state != login_session['state']:
         response = "Your state is not my state"
@@ -46,14 +45,12 @@ def githubconnect():
         return "There was a problem: %s" % result['error']
     # get the access token
     access_token = result['access_token']
-    print "Access token: %s" % access_token
     #prepare headers with token
     headers = {'Authorization': 'token %s' % access_token}
     # get user data with access_token
     url = 'https://api.github.com/user'
     response, content = h.request(url, 'GET', headers=headers)
     status = response.status
-    print status
     if status != 200:
         return "There was a problem %s" % json.loads(content)['message']
     result = json.loads(content)

@@ -34,7 +34,6 @@ def check_img_link(link):
     allowed_img = ('jpg', 'jpeg', 'png', 'gif')
     if '.' in link:
         splitlink = link.split('.')
-        print splitlink, splitlink[-1].lower()
         if splitlink[-1].lower() in allowed_img:
             return link
     return None

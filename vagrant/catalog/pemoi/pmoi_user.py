@@ -112,8 +112,6 @@ def delete_user(user):
     try:
         os.rmdir(os.path.join(app.config['UPLOAD_FOLDER'], user.username))
     except OSError as err:
-        print "There was a problem deleting the folder"
-        print "OS error: {0}".format(err)
         return False
     user.name = ''
     user.email = 'user_%s_@deleted' % user.id
