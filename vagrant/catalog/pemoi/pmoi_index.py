@@ -10,14 +10,16 @@ from database_setup import Category, Item
 
 from pemoi import app
 
+from menu import register_menu
+
 @app.route('/')
 @app.route('/index/')
 def index():
     user_id = login_session.get("user_id")
     try:
-        categories = db_session.query(Category).filter((Category.public==True)| (Category.user_id==user_id)).all()
+        # categories = db_session.query(Category).filter((Category.public==True)| (Category.user_id==user_id)).all()
         items = db_session.query(Item).filter((Item.public==True)| (Item.user_id==user_id)).order_by(desc(Item.add_date)).all()
     except:
-        categories = None
+        # categories = None
         items = None
-    return render_template('index.html', categories=categories, items=items)
+    return render_template('index.html', items=items)

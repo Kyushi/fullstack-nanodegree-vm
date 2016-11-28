@@ -13,6 +13,7 @@ from pmoi_db_session import db_session
 
 from pemoi import app
 
+### Helpers for categories
 # Check category name
 def name_exists(name, public):
     if public:
@@ -24,35 +25,19 @@ def name_exists(name, public):
             return True
     return False
 
-@app.route('/categories/')
-def show_categories():
-    if 'user_id' in login_session:
-        categories = db_session.query(Category).filter((Category.public==True)| (Category.user_id==login_session['user_id'])).all()
-    else:
-        categories = db_session.query(Category).filter_by(public=True).all()
-    return render_template('categories.html', categories=categories)
+def get_categories(only_own=False):
+    user_id = login_session.get('user_id')
+    if not user_id:
+        return db_session.query(Category).filter_by(public=True).all()
+    if only_own:
+        return db_session.query(Category).filter_by(user_id=user_id).all()
+    return db_session.query(Category).filter(
+                           (Category.public==True)|
+                           (Category.user_id==login_session['user_id'])
+                           ).all()
 
-@app.route('/category/<int:category_id>/')
-def show_category(category_id):
-    user_id = login_session.get('user_id') or "nobody"
-    print user_id
-    try:
-        category = db_session.query(Category).filter_by(id=category_id).one()
-    except:
-        flash("This category does not exist yet")
-        return redirect('/')
-    if category.public or category.user_id==user_id:
-        items = db_session.query(Item).filter(\
-                                    (Item.category_id==category.id)\
-                                    &((Item.public==True)\
-                                    |(Item.user_id==user_id)))\
-                                    .all()
-        print "Query successful. Items found: %s" % len(items)
-        return render_template('showcategory.html', category=category, items=items)
-    else:
-        flash('This is a private category')
-        return redirect('/')
 
+# JSON endpoints
 @app.route('/category/<int:category_id>/json/')
 def category_json(category_id):
     items = db_session.query(Item).filter_by(category_id=category_id).all()
@@ -63,10 +48,36 @@ def categories_json():
     categories = db_session.query(Category).all()
     return jsonify(Categories = [c.serialize for c in categories])
 
+# Routes
+@app.route('/categories/')
+def show_categories():
+    return render_template('categories.html')
+
+@app.route('/category/<int:category_id>/')
+def show_category(category_id):
+    user_id = login_session.get('user_id')
+    try:
+        category = db_session.query(Category).filter_by(id=category_id).one()
+    except:
+        flash("This category does not exist yet")
+        return redirect(url_for('index'))
+    if not category.public or category.user_id==user_id:
+        flash('This is a private category')
+        return redirect(url_for('index'))
+    items = db_session.query(Item).filter(\
+                                (Item.category_id==category.id)\
+                                &((Item.public==True)\
+                                |(Item.user_id==user_id)))\
+                                .all()
+    return render_template('showcategory.html',
+                            category=category,
+                            items=items)
+
 @app.route('/category/new/', methods=['GET', 'POST'])
 def new_category():
     if 'user_id' not in login_session:
         return redirect('/login')
+    categories = get_public_and_user_categories(login_session['user_id'])
     if request.method == 'POST':
         public = True if request.form.get('public') else False
         category = Category(name=request.form['name'],
@@ -74,18 +85,17 @@ def new_category():
                             user_id=login_session['user_id'],
                             public=public)
         if not category.name or name_exists(category.name, public):
-            error = """The category has no name or another public category
-                    of the same name exists already."""
-            return render_template('editcategory.html', category=category, error=error)
+            flash("""The category has no name or another public category
+                    of the same name already exists.""")
+            return render_template('editcategory.html',
+                                    categories=categories,
+                                    category=category)
         db_session.add(category)
-        print "Category added"
         db_session.commit()
-        print "Session committed"
         db_session.refresh(category)
-        print "ID: %s\nName: %s\nDescription: %s\nPublic: %s" % (category.id, category.name, category.description, category.public)
         return redirect(url_for('show_category', category_id=category.id))
     else:
-        return render_template('newcategory.html')
+        return render_template('newcategory.html', categories=categories)
 
 @app.route('/category/<int:category_id>/edit/', methods={'GET', 'POST'})
 def edit_category(category_id):
@@ -114,8 +124,8 @@ def edit_category(category_id):
             print request.url
             return redirect("/category/%s" % category_id)
         else:
-            print request.url
-            return render_template('editcategory.html', category=category)
+            return render_template('editcategory.html',
+                                    category=category)
 
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
 def delete_category(category_id):
@@ -139,4 +149,5 @@ def delete_category(category_id):
             db_session.commit()
             return redirect('/')
         else:
-            return render_template('deletecategory.html', category=category)
+            return render_template('deletecategory.html',
+                                    category=category)

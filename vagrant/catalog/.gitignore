@@ -1,7 +1,9 @@
 fb_client_secrets.json
 google_client_secrets.json
 tumblr_client_secrets.json
+github_client_secrets.json
 pemoi.db
 populator.py
 secret.py
 dbconnection.py
+.idea

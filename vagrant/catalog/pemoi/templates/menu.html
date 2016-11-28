@@ -1,5 +1,6 @@
 <!-- TODO:THink about proper menu -->
 <nav class="row">
+
   <ul class="menu-ul col-xs-12">
     <li class="menu-li"><a href="{{url_for('index')}}">Home</a></li>
     <li class="menu-li"><a href="{{url_for('show_session')}}">Login Session</a></li>
@@ -17,12 +18,17 @@
       <a href="{{url_for('show_categories')}}">Categories</a>
       <ul class="submenu">
         <li class="submenu-li"><a href="{{url_for('new_category')}}">New category</a></li>
-        {% for c in categories %}
-          <li class="submenu-li"><a href="{{url_for('show_category', category_id=c.id)}}">{{c.name}}</a></li>
+        {% for category in categories %}
+          <li class="submenu-li">
+            <a href="{{url_for('show_category', category_id=category.id)}}">
+              {{category.name}}{% if not category.public %} (Private){% endif %}
+            </a>
+          </li>
         {% endfor %}
       </ul>
     </li>
     {% endif %}
     <li class="menu-li"><a href="{{url_for('new_item')}}">New item</a></li>
   </ul>
+
 </nav>

@@ -3,7 +3,7 @@
 
 
 <section class="userinfo row">
-  <div class="col-md-11 padding-none">
+  <div class="col-md-12 padding-none">
     <h1>{{user.username}}'s profile {% if user.id == session['user_id'] %}(that's you){% endif %}</h1>
     <figure class="creator">
       <img src="{{user.picture}}" class="profile-pic-preview">
@@ -56,14 +56,16 @@
   <br>
   {% if user.categories %}
   <h3>Categories:</h3>
-    {% for category in user.category %}
-      {% include 'categorybox.html' %}
+    {% for category in user.categories %}
+      {% if session['user_id'] == user.id or category.public %}
+        {% include 'categorycomplete.html' %}
+      {% endif %}
     {% endfor %}
   {% endif %}
-  <h3>Inspirations</h3>
   {% if user.items %}
+  <h3>Inspirations</h3>
     {% for item in user.items %}
-        {% if item.public %}
+        {% if item.public or item.user_id == session['user_id'] %}
             {% include 'itembox.html' %}
         {% endif %}
     {% endfor %}

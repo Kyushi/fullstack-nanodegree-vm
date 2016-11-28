@@ -8,23 +8,20 @@ from flask import render_template, \
                   session as login_session
 
 from pemoi import app
-
 from pmoi_auth import get_user_info, verify_username
-
 from pmoi_db_session import db_session
-
 from database_setup import Category, Item, User
-
 from pmoi_item import delete_file_and_row
 
 @app.route('/profile/<int:user_id>/')
 def show_profile(user_id):
     try:
         user = get_user_info(user_id)
-        return render_template('profile.html', user=user)
+        return render_template('profile.html',
+                               user=user)
     except:
         flash("This user does not exist")
-        return redirect('/')
+        return redirect(url_for('index'))
 
 
 @app.route('/profile/<int:user_id>/edit/', methods=['GET', 'POST'])
@@ -66,7 +63,7 @@ def edit_profile(user_id):
             return render_template('editprofile.html', user=user)
     except:
         flash("This user does not exist")
-        return redirect('/')
+        return redirect(url_for('index'))
 
 @app.route('/profile/<int:user_id>/delete/', methods=['GET', 'POST'])
 def delete_profile(user_id):
@@ -75,7 +72,6 @@ def delete_profile(user_id):
     if user_id != login_session["user_id"]:
         flash("You can only delete your own profile.")
         return redirect(url_for('index'))
-    # try:
     user = get_user_info(user_id)
     if request.method == 'POST':
         deleted = delete_user(user)
@@ -85,10 +81,10 @@ def delete_profile(user_id):
         flash("We are crying bitter tears to see you leaving. Please come back one day.")
         return redirect('/')
     else:
-        return render_template('deleteprofile.html', user=user, categories=get_user_categories(user.id, False), items=get_user_items(user.id))
-    # except:
-        flash("This user does not exist")
-        return redirect('/')
+        return render_template('deleteprofile.html',
+                               user=user,
+                               my_categories=get_user_categories(user.id, False),
+                               items=get_user_items(user.id))
 
 
 # Get user categories

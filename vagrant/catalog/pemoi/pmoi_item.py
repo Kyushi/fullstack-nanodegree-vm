@@ -37,6 +37,7 @@ def serve_file_from_folder(username, filename):
     path = os.path.join('static', 'uploads', username)
     return send_from_directory(path, filename)
 
+# JSON endpoint for items
 @app.route('/inspiration/<int:item_id>/json/')
 def item_json(item_id):
     item = db_session.query(Item).filter_by(id=item_id).one()
@@ -63,20 +64,16 @@ def new_item():
     if not 'user_id' in login_session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        print "Something was POSTed"
         link = ''
         file = request.files['file']
         print "File found: %s" % file.filename
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            print filename
             path = os.path.join(app.config['UPLOAD_FOLDER'],
                                 login_session['username'])
             save_path = os.path.join(path, filename)
             file.save(save_path)
-            print "File saved at %s" % save_path
             link = os.path.join('/', 'static', 'users', login_session['username'], filename)
-            print "Link: %s" % link
         if not link:
             link = check_img_link(request.form.get('link'))
         if request.form['category'] == '0' and request.form['newcategory']:
@@ -90,7 +87,6 @@ def new_item():
             db_session.commit()
             db_session.refresh(category)
             category_id = category.id
-            print "Category ID: %s, Category name: %s" % (category_id, category.name)
         else:
             category_id = request.form['category']
         if not link:
@@ -105,17 +101,13 @@ def new_item():
                     user_id=login_session['user_id'],
                     public=True if request.form.get('public') else False
                     )
-        print "Item populated"
         db_session.add(item)
-        print "Item added"
         db_session.commit()
-        print "Session committed"
         flash("Inspiration successfully saved")
         db_session.refresh(item)
         return redirect(url_for('show_item', item_id=item.id))
     else:
-        categories = db_session.query(Category).filter((Category.public==True)|(Category.user_id==login_session['user_id']))
-        return render_template('newitem.html', categories=categories)
+        return render_template('newitem.html')
 
 
 # Edit an item
@@ -145,8 +137,7 @@ def edit_item(item_id):
         db_session.refresh(item)
         return redirect(url_for('show_item', item_id=item.id))
     else:
-        categories = db_session.query(Category).filter((Category.public==True)|(Category.user_id==login_session['user_id']))
-        return render_template('edititem.html', categories=categories, item=item)
+        return render_template('edititem.html', item=item)
 
 
 # delete an item
@@ -168,7 +159,8 @@ def delete_item(item_id):
         flash("Item %s deleted!" % item_title)
         return redirect('/')
     else:
-        return render_template('deleteitem.html', item_title=item_title)
+        return render_template('deleteitem.html',
+                               item_title=item_title)
 
 
 def delete_file_and_row(item):

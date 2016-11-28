@@ -12,3 +12,9 @@ import pemoi.googleoauth
 import pemoi.pmoi_index
 import pemoi.pmoi_item
 import pemoi.pmoi_user
+
+from pmoi_cat import get_categories
+
+@app.context_processor
+def categories_for_menu():
+    return dict(categories=get_categories())
