@@ -1,47 +1,18 @@
 // github oauth signin
-// function startOAuthRequest() function() {
-//   $client-id = "d6957d4007ba48103730"
-//   $redirect_uri = "http://localhost:5000/login"
-//   $.ajax({
-//     type: 'POST',
-//     url: '/githubconnect?state='+$state,
-//     processData: false,
-//     contentType: 'application/octet-stream; charset=utf-8',
-//     // data: authResult['code'],
-//     success: function(result) {
-//       if (result) {
-//         // console.log(result);
-//         if (result != "new") {
-//           $('#result').html('Login successful for:<br>' + result + '<br>Redirecting to start page ...')
-//           setTimeout(function() {
-//             window.location.href = '/index/';
-//           }, 3000);
-//         }
-//         else {
-//           $('#result').html('Thanks for signing in. Please complete the sign up. Redirecting ...')
-//           setTimeout(function() {
-//             window.location.href = '/completesignup/';
-//           }, 4000);
-//         }
-//       }
-//       else if (authResult['error']) {
-//         console.log("There was an error during authentication" + authResult['error']);
-//       }
-//       else {
-//         $('#result').html("Failed to make a server-side call. Check your configuration and console.");
-//       }
-//     }
-//   });
-// }
+function githubOAuth() {
+  console.log("Function githubOAuth called");
+  $url = "https://github.com/login/oauth/authorize?client_id=d6957d4007ba48103730&scope=user:email&state=" + $state
+  console.log($url);
+  $.get($url, function(data, status){
+    console.log(data, status);
+  });
+}
 
 
 
 // Google oauth signin
-
 function signInCallback(authResult){
   if(authResult['code']) {
-    // Hide signin button after successful login
-    $('#signinButton').attr('style', 'display: none');
     // Send one-time-use code to the server, if successful, display welcome message
     $.ajax({
       type: 'POST',
@@ -78,7 +49,6 @@ function signInCallback(authResult){
 
 
 // Facebook oauth signin
-
 // FB SDK
 window.fbAsyncInit = function() {
     FB.init({
@@ -135,4 +105,30 @@ function sendTokenToServer() {
 // Close button
 $(".close").on("click", function() {
   $(this).parent().remove();
+});
+
+// Check if public category exists upon input
+$("#new-public").on("change", function(){
+  if (this.checked) {
+    $catname = $("#newcategory").val();
+    console.log($catname);
+    $.ajax({
+      type: 'POST',
+      url: '/checkcatname',
+      data: $catname,
+      success: function(result) {
+        console.log(result)
+        if(result != "OK"){
+          $("#catname-warning").html("A public category with this name already exists. Please choose a different name.");
+          $("#submit").prop("disabled", true);
+          $("#submit").css("background-color", "#aaa")
+        }
+      }
+    });
+  }
+  else {
+    $("#catname-warning").html("");
+    $("#submit").prop("disabled", false);
+    $("#submit").css("background-color", "");
+  }
 });

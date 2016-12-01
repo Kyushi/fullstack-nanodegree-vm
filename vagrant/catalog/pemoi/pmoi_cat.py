@@ -1,4 +1,5 @@
 __author__ = 'Akechi'
+
 from flask import flash, \
                   render_template, \
                   redirect, \
@@ -14,6 +15,8 @@ from pmoi_db_session import db_session
 from pemoi import app
 
 ### Helpers for categories
+
+
 # Check category name
 def name_exists(name, public):
     if public:
@@ -49,9 +52,29 @@ def categories_json():
     return jsonify(Categories = [c.serialize for c in categories])
 
 # Routes
+
+# Route for ajax check
+@app.route('/checkcatname', methods=['POST'])
+def check_catname():
+    catname = request.data
+    unique = name_exists(catname, True)
+    if not unique:
+        return "Bad category name"
+    return "OK"
+
 @app.route('/categories/')
 def show_categories():
     return render_template('categories.html')
+
+@app.route('/inspiration/myinspirations/')
+def show_own():
+    if not 'user_id' in login_session:
+        flash("Please log in to view your items")
+        return redirect(url_for('login'))
+    items = db_session.query(Item).filter_by(user_id=login_session['user_id'])\
+            .all()
+    return render_template('index.html', items=items)
+
 
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
@@ -59,10 +82,10 @@ def show_category(category_id):
     try:
         category = db_session.query(Category).filter_by(id=category_id).one()
     except:
-        flash("This category does not exist yet")
+        flash("Category does not exist or is private")
         return redirect(url_for('index'))
-    if not category.public or category.user_id==user_id:
-        flash('This is a private category')
+    if not (category.public or category.user_id == user_id):
+        flash("Category does not exist or is private")
         return redirect(url_for('index'))
     items = db_session.query(Item).filter(\
                                 (Item.category_id==category.id)\
@@ -77,7 +100,6 @@ def show_category(category_id):
 def new_category():
     if 'user_id' not in login_session:
         return redirect('/login')
-    categories = get_public_and_user_categories(login_session['user_id'])
     if request.method == 'POST':
         public = True if request.form.get('public') else False
         category = Category(name=request.form['name'],
@@ -88,14 +110,13 @@ def new_category():
             flash("""The category has no name or another public category
                     of the same name already exists.""")
             return render_template('editcategory.html',
-                                    categories=categories,
                                     category=category)
         db_session.add(category)
         db_session.commit()
         db_session.refresh(category)
         return redirect(url_for('show_category', category_id=category.id))
     else:
-        return render_template('newcategory.html', categories=categories)
+        return render_template('newcategory.html')
 
 @app.route('/category/<int:category_id>/edit/', methods={'GET', 'POST'})
 def edit_category(category_id):
@@ -139,7 +160,8 @@ def delete_category(category_id):
         flash("You can only delete categories that you have created yourself")
         return redirect("/category/%s" % category_id)
     elif category.items:
-        flash("This category has items in it. You can only delete an empty category (There may be private items in there)")
+        flash("""This category has items in it. You can only delete an empty
+              category (There may be private items in there)""")
         return redirect(url_for('show_category', category_id=category_id))
     else:
         if request.method == 'POST':

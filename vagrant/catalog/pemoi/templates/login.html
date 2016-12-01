@@ -3,30 +3,52 @@
 {% block content %}
 
 <section class="row login-section">
-<!-- Google plus sign in -->
-  <div id="col-xs-12 signinButton">
-    <span class="g-signin"
-      data-scope="openid email"
-      data-clientid="1068528154047-7nb2sq54q904v3us1b5u2mirrdtstmma.apps.googleusercontent.com"
-      data-redirecturi="postmessage"
-      data-accesstype="offline"
-      data-cookiepolicy="single_host_origin"
-      data-callback="signInCallback"
-      data-approvalprompt="force">
-    </span>
+
+  <div class="col-xs-12">
+    <div class="profile-box">
+
+      <div class="center login-box">
+        <p class="explanation">You can log in or sign up to PeMoI with an account of the below services.
+          We will only receive the information within the scope that you grant us.
+          If you haven't signed up before, you will be redirected to our signup page to complete your registration.
+      </div>
+
+      <!-- Div to display result of login process -->
+      <div id="result" class="center login-box login-result">
+        {{result}}
+      </div>
+
+      <!--  github signin -->
+      <div class="center login-box">
+        <a href="https://github.com/login/oauth/authorize?client_id=d6957d4007ba48103730&scope=user:email&state={{STATE}}"
+           class="zocial github">
+          Sign in with github
+        </a>
+      </div>
+
+      <!-- FB login button -->
+      <div class="center login-box">
+        <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+          <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+        </fb:login-button>
+      </div>
+
+      <!-- Google plus sign in -->
+      <div class="center login-box">
+        <div id="signinButton">
+          <span class="g-signin"
+            data-scope="openid email"
+            data-clientid="1068528154047-7nb2sq54q904v3us1b5u2mirrdtstmma.apps.googleusercontent.com"
+            data-redirecturi="postmessage"
+            data-accesstype="offline"
+            data-cookiepolicy="single_host_origin"
+            data-callback="signInCallback">
+          </span>
+        </div>
+      </div>
+
+    </div>
   </div>
-
-<!-- FB login button -->
-<fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
-  <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
-
-</fb:login-button>
-
-<!--  github signin -->
-<a href="https://github.com/login/oauth/authorize?client_id=d6957d4007ba48103730&scope=user:email&state={{STATE}}">Sign in with github</a>
-
-<!-- Div to display result of login process -->
-  <div id="result"></div>
 </section>
 
 {% endblock %}

@@ -1,4 +1,4 @@
-"""The secret for my PeMOI app"""
+"""The configurations for my PeMOI app"""
 
 import os
 

@@ -1,24 +1,24 @@
-<div class="row item-box">
-  {% include 'userbox.html' %}
-  <img src="{{item.link}}" class="item-img"><br>
-  <p>{{item.title}}</p>
-  <p>{{item.artist}}</p>
-  <p>{{item.note}}</p>
-  <p>
-    <a href="{{url_for('show_category', category_id=item.category.id)}}">
-      {{item.category.name}}
-    </a>
-  </p>
-  <div class="edit-delete">
-  {% if 'user_id' in session %}
-    {% if item.user.id == session['user_id'] %}
-    <a href="{{url_for('edit_item', item_id=item.id)}}">
-      Edit
-    </a> |
-    <a href="{{url_for('delete_item', item_id=item.id)}}">
-      Delete
-    </a>
+  <div class="item-box">
+    {% include 'userbox.html' %}
+    <img src="{{item.link}}" class="item-img"><br>
+    <p>{{item.title}}</p>
+    <p>{{item.artist}}</p>
+    <p>{{item.note}}</p>
+    <p>
+      <a href="{{url_for('show_category', category_id=item.category.id)}}">
+        {{item.category.name}}
+      </a>
+    </p>
+    <div class="edit-delete">
+    {% if 'user_id' in session %}
+      {% if item.user.id == session['user_id'] %}
+      <a href="{{url_for('edit_item', item_id=item.id)}}">
+        Edit
+      </a> |
+      <a href="{{url_for('delete_item', item_id=item.id)}}">
+        Delete
+      </a>
+      {% endif %}
     {% endif %}
-  {% endif %}
+    </div>
   </div>
-</div>

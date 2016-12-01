@@ -21,10 +21,10 @@ from pmoi_db_session import db_session
 def githubconnect():
     # Receive state from github
     state = request.args.get('state')
-    # If state is not identical to db_session state, return error TODO: proper redirect
+    # If state is not identical to db_session state, return error
     if state != login_session['state']:
-        response = "Your state is not my state"
-        return response
+        flash("Your state is not my state")
+        return redirect(url_for('login'))
     # Code is received from github
     code = request.args.get('code')
     # Load client id and secret from file
@@ -40,9 +40,10 @@ def githubconnect():
     response = h.request(url, 'POST', urllib.urlencode(params), headers=headers)
     # Read the actual result from the response
     result = json.loads(response[1])
-    # Let the user know if there was an error TODO: proper return
+    # Let the user know if there was an error
     if 'error' in result:
-        return "There was a problem: %s" % result['error']
+        flash("There was a problem: %s" % result['error'])
+        return redirect('login')
     # get the access token
     access_token = result['access_token']
     #prepare headers with token

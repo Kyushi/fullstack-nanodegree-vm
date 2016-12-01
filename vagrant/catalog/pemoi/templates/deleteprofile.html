@@ -1,30 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="delete-profile row">
-  <h2>Are you sure that you want to delete your profile, {{user.name}}?</h2>
-  <p>If you delete your profile, you will also permanently delete
-    <ul>
-      <li>Your complete profile data (View <a href="{{url_for('show_profile', user_id=user.id)}}">here</a>)</li>
-      <li>All your private categories (public ones cannot be deleted)</li>
-      <li>All your inspirations, public or private.</li>
-    </ul>
-    Deleting your data cannot be undone, the data is erased from the database permanently.<br>
-    You can always sign up again later.
-  </p>
-  <div class="categories">
-    These are your private categories:
-    {% for category in my_categories %}
-      {% include 'categorycomplete.html' %}
-    {% endfor %}
+<section class="row">
+  <div class="col-xs-12">
+    <div class="form-box">
+      <form action="{{url_for('delete_profile', user_id=user.id)}}" method="POST">
+        <h2>Are you sure that you want to delete your profile, {{user.name}}?</h2>
+        <p>If you delete your profile, you will also permanently delete
+          <ul class="note">
+            <li>
+              Your complete profile data (View
+              <a href="{{url_for('show_profile', user_id=user.id)}}">here</a>)
+            </li>
+            <li>All your private categories</li>
+            <li>
+              All your empty public categories. Ownership of public categories
+              with items will be transferred to the site admin.</li>
+            <li>All your inspirations, public or private.</li>
+          </ul>
+          Deleting your data cannot be undone, the data is erased from the database permanently.<br>
+          You can always sign up again later.
+        </p>
+        <h3>Your categories and items:</h3>
+
+        <div class="categories">
+          <h4>These are your private categories:</h4>
+          {% if my_categories %}
+            {% for category in my_categories %}
+              {% include 'categorycomplete.html' %}
+            {% endfor %}
+          {% else %}
+            <p>You have no private categories</p>
+          {% endif %}
+        </div>
+
+        <div class="categories">
+          <h4>Public categories*:</h4>
+          <p class="text-small">
+            *Public categories that have items in them will not be deleted,
+            their ownership will be transferred to the site admin.
+          </p>
+          {% if my_public_categories %}
+            {% for category in my_public_categories %}
+              {% include 'categorycomplete.html' %}
+            {% endfor %}
+          {% else %}
+            <p>You have no public categories</p>
+          {% endif %}
+        </div>
+
+        <div class="items">
+          <h4>These are your items:</h4>
+          {% if items %}
+            {% for item in items %}
+              {% include 'itembox.html' %}
+            {% endfor %}
+          {% else %}
+            <p>You haven't saved any inspirations</p>
+          {% endif %}
+        </div>
+
+        <input type="submit"
+               value="I'm done with inspiration, delete this account forever"
+               class="submit">
+      </form>
+    </div>
   </div>
-  <div class="items">
-    These are your items:
-    {% for item in items %}
-      {% include 'itembox.html' %}
-    {% endfor %}
-  </div>
-  <form method="POST">
-    <input type="submit" value="I'm done with inspiration, delete this account forever">
-  </form>
+</section>
 {% endblock %}

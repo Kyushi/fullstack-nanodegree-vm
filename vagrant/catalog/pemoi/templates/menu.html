@@ -5,21 +5,40 @@
     <li class="menu-li"><a href="{{url_for('index')}}">Home</a></li>
     {% if 'user_id' in session %}
     <li class="menu-li holds-sub">
-      <a href="{{url_for('show_profile', user_id=session['user_id'])}}">Your profile</a>
+      <a href="{{url_for('show_profile', user_id=session['user_id'])}}"
+         class="menu-link">
+        Your profile
+      </a>
       <ul class="submenu">
-          <li class="submenu-li"><a href="{{url_for('edit_profile', user_id=session['user_id'])}}">Edit your profile</a></li>
-          <li class="submenu-li"><a href="{{url_for('delete_profile', user_id=session['user_id'])}}">Delete your profile</a></li>
+        <li class="submenu-li">
+          <a href="{{url_for('show_own', user_id=session['user_id'])}}"
+             class="menu-link">
+            Show my items
+          </a>
+        </li>
+        <li class="submenu-li">
+          <a href="{{url_for('edit_profile', user_id=session['user_id'])}}"
+             class="menu-link">
+            Edit your profile
+          </a>
+        </li>
+        <li class="submenu-li">
+          <a href="{{url_for('delete_profile', user_id=session['user_id'])}}"
+             class="menu-link">
+            Delete your profile
+          </a>
+        </li>
       </ul>
     </li>
     {% endif %}
     {% if categories %}
     <li class="menu-li holds-sub">
-      <a href="{{url_for('show_categories')}}">Categories</a>
+      <a href="{{url_for('show_categories')}}" class="menu-link">Categories</a>
       <ul class="submenu">
-        <li class="submenu-li"><a href="{{url_for('new_category')}}">New category</a></li>
         {% for category in categories %}
           <li class="submenu-li">
-            <a href="{{url_for('show_category', category_id=category.id)}}">
+            <a href="{{url_for('show_category', category_id=category.id)}}"
+               class="menu-link">
               {{category.name}}{% if not category.public %} (Private){% endif %}
             </a>
           </li>
@@ -27,7 +46,16 @@
       </ul>
     </li>
     {% endif %}
-    <li class="menu-li"><a href="{{url_for('new_item')}}">New item</a></li>
+    <li class="menu-li">
+      <a href="{{url_for('new_category')}}" class="menu-link">
+        New category
+      </a>
+    </li>
+    <li class="menu-li">
+      <a href="{{url_for('new_item')}}" class="menu-link">
+        New item
+      </a>
+    </li>
   </ul>
 
 </nav>

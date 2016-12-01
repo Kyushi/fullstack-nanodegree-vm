@@ -1,4 +1,6 @@
 __author__ = 'Akechi'
+
+
 import os
 from flask import render_template, \
                   flash, \
@@ -8,7 +10,8 @@ from flask import render_template, \
                   session as login_session
 
 from pemoi import app
-from pmoi_auth import get_user_info, verify_username
+from pmoi_auth import get_user_info
+from pmoi_helpers import username_error
 from pmoi_db_session import db_session
 from database_setup import Category, Item, User
 from pmoi_item import delete_file_and_row
@@ -33,37 +36,36 @@ def edit_profile(user_id):
         return redirect(url_for('show_profile', user_id=user_id))
     try:
         user = get_user_info(user_id)
-        if request.method == 'POST':
-            users = db_session.query(User).all()
-            name = request.form['name']
-            username = request.form['username']
-            picture = request.form['picture']
-            about = request.form['about']
-            email = request.form['email']
-            if not user.username == username:
-                if not verify_username(username, users):
-                    error = "The username is not available or does not meet \
-                            specifications"
-                    return render_template('editprofile.html',
-                                           error=error,
-                                           user=user)
-            user.name = name
-            user.username = username
-            user.picture = picture
-            user.about = about
-            user.email = email
-            login_session['name'] = name
-            login_session['username'] = username
-            login_session['picture'] = picture
-            login_session['email'] = email
-            db_session.add(user)
-            db_session.commit()
-            return redirect(url_for('show_profile', user_id=user.id))
-        else:
-            return render_template('editprofile.html', user=user)
     except:
         flash("This user does not exist")
         return redirect(url_for('index'))
+    print "User found %s" % user.username
+    if request.method == 'POST':
+        username = request.form['username']
+        about = request.form['about']
+        if not user.username == username:
+            error = username_error(username)
+            if error:
+                flash(error)
+                return render_template('editprofile.html',
+                                       user=user)
+        try:
+            olddir = os.path.join(app.config['UPLOAD_FOLDER'], user.username)
+            newdir = os.path.join(app.config['UPLOAD_FOLDER'], username)
+            print "Attempting to rename directory %s to %s ..." % (olddir, newdir)
+            os.rename(olddir, newdir)
+        except OSError as err:
+            print err.errno, err.strerror, err.filename
+            raise
+        user.username = username
+        user.about = about
+        login_session['username'] = username
+        login_session['about'] = about
+        db_session.add(user)
+        db_session.commit()
+        return redirect(url_for('show_profile', user_id=user.id))
+    else:
+        return render_template('editprofile.html', user=user)
 
 @app.route('/profile/<int:user_id>/delete/', methods=['GET', 'POST'])
 def delete_profile(user_id):
@@ -83,7 +85,10 @@ def delete_profile(user_id):
     else:
         return render_template('deleteprofile.html',
                                user=user,
-                               my_categories=get_user_categories(user.id, False),
+                               my_categories=get_user_categories(user.id,
+                                                                 False),
+                               my_public_categories=get_user_categories(user.id,
+                                                                        True),
                                items=get_user_items(user.id))
 
 
@@ -106,9 +111,13 @@ def delete_user(user):
         db_session.delete(cat)
         db_session.commit()
     for cat in public_categories:
-        cat.user_id = 1
-        db_session.add(cat)
-        db_session.commit()
+        if not cat.items():
+            db_session.delete(cat)
+            db_session.commit()
+        else:
+            cat.user_id = 0
+            db_session.add(cat)
+            db_session.commit()
     try:
         os.rmdir(os.path.join(app.config['UPLOAD_FOLDER'], user.username))
     except OSError as err:

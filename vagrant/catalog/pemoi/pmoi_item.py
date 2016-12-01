@@ -77,6 +77,7 @@ def new_item():
         if request.form['category'] == '0' and request.form['newcategory']:
             public = request.form.get('public-category')
             if name_exists(request.form['newcategory'], public):
+                # TODO: proper return, js test, ajax warning
                 return "This public category exists already"
             category = Category(name=request.form['newcategory'],
                                 user_id=login_session['user_id'],
@@ -146,7 +147,6 @@ def delete_item(item_id):
     except:
         flash("This item does not exist")
         return redirect ('/')
-    item_title = item.title
     if item.user_id != login_session['user_id']:
         flash("You can only delete your own items!<br>")
         return redirect(url_for('show_item', item_id=item_id))
@@ -156,7 +156,7 @@ def delete_item(item_id):
         return redirect('/')
     else:
         return render_template('deleteitem.html',
-                               item_title=item_title)
+                               item=item)
 
 
 def delete_file_and_row(item):

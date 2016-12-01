@@ -1,71 +1,96 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="item-section">
-  <form class="item-form row" method="POST" action="{{url_for('new_item')}}" enctype=multipart/form-data>
-    <br>
-    <label for="category" class="col-xs-12 col-md-2">
-      Select a category here:
-    </label>
-    <select name="category">
-        <option value="0">Select a category</option>
-      {% for c in categories %}
-        <option value={{c.id}}>{{c.name}}</option>
-      {% endfor %}
-    </select>
-    <label>
-       or add a new category:
-      <input type="text" name="newcategory" value="{{newcategory}}">
-    </label>
-    <label>
-       make public
-      <input type="checkbox" name="public-category" value="True">
-    </label>
-    <br>
-    <br>
-    <label class="col-xs-12">
-      Paste link to image here (.png, .jpg/jpeg or .gif only):
-      <input type="text" name="link" class="col-xs-12" placeholder="Only image files" value={{link}}>
-    </label>
-    <label class="col-xs-12">
-      Or upload a file here (.png, .jpg/jpeg or .gif only, max 10MB)
-      <input type="file" name="file">
-    </label>
-    <br>
-    <br>
-    <label for="title" class="col-xs-12">
-      Title of the work:
-      <input type="text" name="title" class="col-xs-12" value="{{title}}">
-    </label>
-    <br>
-    <br>
-    <label for="artist" class="col-xs-12">
-      Artist of the work:
-      <input type="text" name="artist" class="col-xs-12" value="{{artist}}">
-    </label>
-    <br>
-    <br>
-    <label for="notes" class="col-xs-12">
-      Your notes:
-      <textarea class="col-xs-12 notes" name="note">{{note}}</textarea>
-    </label>
-    <br>
-    <br>
-    <br>
-    <label for="keywords" class="col-xs-12">
-      Enter keywords:
-      <input type="text" name="keywords" class="col-xs-12" value="{{keywords}}">
-    </label>
-    <br>
-    <br>
-    <label for="public" class="col-xs-12">
-      <input type="checkbox" name="public" value="True">
-       Make this item public*
-    </label>
-    <br>
-    <br>
-    <input type="submit" value="Save" class="col-xs-2 button">
-  </form>
+<section class="row">
+  <div class="col-xs-12">
+    <div class="form-box">
+      <form class="form-horizontal" method="POST" action="{{url_for('new_item')}}" enctype=multipart/form-data>
+        <br>
+        <div class="form-group">
+          <select name="category">
+              <option value=0>Select a category</option>
+            {% for category in categories %}
+              <option value={{category.id}}>{{category.name}}</option>
+            {% endfor %}
+          </select>
+
+          <label>
+             or add a new category:
+            <input type="text" name="newcategory" id="newcategory">
+          </label>
+          <label>
+            <input type="checkbox" name="public-category" value="True" id="new-public">
+            make public
+          </label>
+          <p class="error text-small" id="catname-warning"><p>
+        </div>
+
+        <div class="form-group">
+          <label>
+            Paste link to image here (.png, .jpg/jpeg or .gif only):
+          </label>
+          <input type="text" class="form-control" name="link"  placeholder="Only image files" value={{link}}>
+        </div>
+
+        <div class="form-group">
+          <label >
+            Or upload a file here (.png, .jpg/jpeg or .gif only, max 10MB)
+          </label>
+          <input type="file" class="form-control" name="file">
+        </div>
+
+        <div class="form-group">
+          <label for="title">
+            Title of the work:
+          </label>
+          <input type="text" class="form-control" name="title" value="{{title}}">
+        </div>
+
+        <div class="form-group">
+          <label for="artist">
+            Artist of the work:
+          </label>
+          <input type="text" class="form-control" name="artist" value="{{artist}}">
+        </div>
+
+        <div class="form-group">
+          <label for="notes">
+            Your notes:
+          </label>
+          <textarea class="form-control" name="note">{{note}}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="keywords">
+            Enter keywords:
+          </label>
+          <input type="text" class="form-control" name="keywords" value="{{keywords}}">
+        </div>
+
+        <div class="form-group">
+          <label for="public">
+            <input type="checkbox"
+                   name="public"
+                   value="True"
+                   {% if item %}
+                     {% if item.public %}
+                       checked
+                     {% endif %}
+                   {% endif %}>
+             Make this item public*
+             <p class="text-small">
+               A public item is visible to everyone. By default, your inspirations
+               are private.
+             </p>
+          </label>
+        </div>
+        <div class="form-group">
+          <input type="submit" value="Save" class="submit" id="submit">
+        </div>
+      </form>
+
+    </div>
+  </div>
 </section>
 
 {% endblock %}

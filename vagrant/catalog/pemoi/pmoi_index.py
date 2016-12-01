@@ -4,22 +4,20 @@ from flask import session as login_session, \
 
 from sqlalchemy import desc
 
-from pmoi_db_session import db_session
-
+from pemoi import app
 from database_setup import Category, Item
 
-from pemoi import app
-
-from menu import register_menu
+from pmoi_db_session import db_session
+from pmoi_helpers import get_or_create_cat_zero, get_or_create_admin
 
 @app.route('/')
 @app.route('/index/')
 def index():
     user_id = login_session.get("user_id")
+    get_or_create_admin()
+    get_or_create_cat_zero()
     try:
-        # categories = db_session.query(Category).filter((Category.public==True)| (Category.user_id==user_id)).all()
         items = db_session.query(Item).filter((Item.public==True)| (Item.user_id==user_id)).order_by(desc(Item.add_date)).all()
     except:
-        # categories = None
         items = None
     return render_template('index.html', items=items)

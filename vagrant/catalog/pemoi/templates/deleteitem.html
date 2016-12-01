@@ -1,8 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form class="col-xs-12" method="POST">
-  <p>Are you sure that you want to delete the item {{item_title}}?</p>
-  <input type="submit" value="Delete forever">
-</form>
+<section class="row">
+  <div class="col-xs-12">
+    <div class="form-box">
+      <form class="form-horizontal" method="POST">
+        <div class="form-group">
+          <label>
+            Are you sure that you want to delete the item "{{item.title}}"
+            by {{item.artist}}?
+          </label>
+          <br>
+          <input type="submit" value="Delete forever" class="submit">
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 {% endblock %}

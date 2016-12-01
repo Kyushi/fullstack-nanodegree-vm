@@ -5,8 +5,10 @@ html, body {
   min-height: 100%; }
 
 body {
-  font-family: Catamaran, Verdana, sans-serif;
+  font-family: Khula, sans-serif;
   /*font-size: 14px;*/
+  line-height: normal;
+  vertical-align: baseline;
   background: #010101;
   background: linear-gradient(#1b1b1b, #010101);
   color: #a69989; }
@@ -36,6 +38,16 @@ h3, .subtitle, .category-name {
   margin: 0;
   padding: 0; }
 
+h4 {
+  color: #AD2B00;
+  font-weight: 400;
+  font-size: 14px;
+  margin: 0;
+  padding: 0; }
+
+p {
+  margin: 0; }
+
 .container {
   background: #fff;
   min-height: 100%; }
@@ -48,6 +60,15 @@ h3, .subtitle, .category-name {
 
 .text-small {
   font-size: 12px; }
+
+.note {
+  color: #AD2B00; }
+
+.error {
+  color: #f00; }
+
+.explanation {
+  text-align: left; }
 
 header {
   padding-top: 1em;
@@ -106,11 +127,22 @@ header {
 .close:after {
   clear: right; }
 
-form,
 input,
 textarea {
-  border-radius: 0.5em;
+  border-radius: 0.333em;
   border: solid 1px #D3900F; }
+
+form {
+  padding: 0.667em; }
+
+.submit {
+  background: #fff;
+  padding: 0.5em 0.667em 0.333em 0.667em;
+  line-height: 1; }
+
+.submit:hover {
+  background: #D3900F;
+  color: #fff; }
 
 .profile-pic-preview {
   max-width: 100%; }
@@ -142,9 +174,6 @@ textarea {
 
 .menu-ul {
   padding-left: 15px; }
-
-.menu-ul:after {
-  clear: both; }
 
 .menu-li {
   position: relative;
@@ -181,14 +210,16 @@ textarea {
   border: 1px solid #D3900F;
   border-radius: 1em;
   padding: 1.33em;
-  margin: 0.67em; }
+  margin-bottom: 0.67em; }
 
+.form-box,
+.profile-box,
 .category-box,
 .category-complete {
   border: 1px solid #D3900F;
   border-radius: 0.667em;
-  padding: 0.33em;
-  margin: 0.33em; }
+  padding: 0.667em;
+  margin-bottom: 0.667em; }
 
 .category-box:first-child {
   margin-left: 0; }
@@ -203,5 +234,27 @@ textarea {
   width: 100%;
   padding: 0.33em;
   text-align: center; }
+
+figure {
+  margin-bottom: 1em; }
+
+figcaption {
+  font-size: 1.5em;
+  color: #010101; }
+
+.center {
+  text-align: center; }
+
+.login-box {
+  width: 100%;
+  margin: 1em 0; }
+
+.login-result {
+  background: #AD2B00;
+  color: #fff; }
+
+.form-horizontal .form-group {
+  margin-left: 0;
+  margin-right: 0; }
 
 /*# sourceMappingURL=styles.css.map */
