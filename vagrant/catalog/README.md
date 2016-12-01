@@ -37,4 +37,10 @@ ___
 You will find an empty page. Use the 'login or sign up' link at the top right to sign up with one of the possible OAuth services. After your initial sign up, you will be redirected to a sign up page to complete your registration. You can now create a new category or save a new image (you can create a category at this point as well).
 Required fields for categories are category name, for images ("Inspirations") only the link is required. Everything is private by default, but can be made public by checking the checkbox accordingly.
 
-**This is still a work in progress and not everything may work as expected. Styling is incomplete.**
+Upon your first visit of the index page, an admin and a catchall category with ID 0 are created. These serve as fallbacks, if i.e. a user forgets to select a category, or if a user deletes their account and they still have public categories that are in use by someone else. In that case, the admin account gets ownership for the public category.
+
+### TODO ###
+
+- Improve form validation by use of (more ajax)
+- Add local accounts (allow local login, non-OAuth)
+- Allow uploading/linking of texts (txt, pdf) and video
