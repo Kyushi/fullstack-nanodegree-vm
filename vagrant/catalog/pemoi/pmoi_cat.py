@@ -1,4 +1,4 @@
-__author__ = 'Akechi'
+"""Module to handle all things category."""
 
 from flask import flash, \
                   render_template, \
@@ -9,34 +9,41 @@ from flask import flash, \
                   jsonify
 
 from database_setup import Category, Item
-
 from pmoi_db_session import db_session
-
 from pemoi import app
 
 ### Helpers for categories
 
-
 # Check category name
-def name_exists(name, public):
-    if public:
-        try:
-            c = db_session.query(Category).filter_by(name=name).one()
-        except:
-            c = None
-        if c:
-            return True
+def name_exists(name):
+    """Check if category name exists in db.
+
+    Public categories are not allowed to appear more than once. Private
+    categories can be duplicates.
+    """
+    print "Name: %s" % name
+    try:
+        c = db_session.query(Category).filter(Category.name==name,\
+            Category.public==True).one()
+        print "It exists"
+    except:
+        c = None
+        print "It doesn't exist"
+    if c:
+        return True
     return False
 
 def get_categories(only_own=False):
     user_id = login_session.get('user_id')
     if not user_id:
-        return db_session.query(Category).filter_by(public=True).all()
+        return db_session.query(Category).filter(Category.public==True,
+                                                 Category.id > 0).all()
     if only_own:
         return db_session.query(Category).filter_by(user_id=user_id).all()
     return db_session.query(Category).filter(
                            (Category.public==True)|
-                           (Category.user_id==login_session['user_id'])
+                           (Category.user_id==login_session['user_id']),
+                           Category.id > 0
                            ).all()
 
 
@@ -56,9 +63,9 @@ def categories_json():
 # Route for ajax check
 @app.route('/checkcatname', methods=['POST'])
 def check_catname():
-    catname = request.data
-    unique = name_exists(catname, True)
-    if not unique:
+    catname = request.json
+    double = name_exists(catname)
+    if double:
         return "Bad category name"
     return "OK"
 
@@ -106,7 +113,7 @@ def new_category():
                             description=request.form['description'],
                             user_id=login_session['user_id'],
                             public=public)
-        if not category.name or name_exists(category.name, public):
+        if not category.name or (name_exists(category.name) and public):
             flash("""The category has no name or another public category
                     of the same name already exists.""")
             return render_template('editcategory.html',
@@ -133,12 +140,16 @@ def edit_category(category_id):
         return redirect("/category/%s" % category_id)
     else:
         if request.method == 'POST':
-            category.name = request.form['name']
-            category.description = request.form['description']
+            name = request.form['name']
             if category.allow_private():
                 category.public = True if request.form.get('public') else False
             else:
                 category.public = True
+            if category.public and name_exists(name):
+                flash("This public category already exists")
+                return render_template('editcategory.html', category=category)
+            category.name = name
+            category.description = request.form['description']
             db_session.add(category)
             db_session.commit()
             return redirect("/category/%s" % category_id)

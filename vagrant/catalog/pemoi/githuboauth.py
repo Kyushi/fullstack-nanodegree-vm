@@ -1,9 +1,8 @@
-__author__ = 'Akechi'
+"""Github OAuth authentication"""
+
 import json
 import urllib
 import httplib2
-
-from pemoi import app
 
 from flask import request, \
                   session as login_session, \
@@ -11,14 +10,16 @@ from flask import request, \
                   redirect, \
                   url_for
 
+from pemoi import app
 from pmoi_auth import get_user_info, get_user_id
-
 from pmoi_db_session import db_session
 
 
 # Connect with github
 @app.route('/githubconnect', methods=['GET', 'POST'])
 def githubconnect():
+    """Connect with github OAuth API"""
+
     # Receive state from github
     state = request.args.get('state')
     # If state is not identical to db_session state, return error
@@ -55,6 +56,7 @@ def githubconnect():
     if status != 200:
         return "There was a problem %s" % json.loads(content)['message']
     result = json.loads(content)
+    # Store user data in session
     login_session['provider'] = 'Github'
     login_session['name'] = result['name']
     login_session['picture'] = result['avatar_url']
@@ -65,15 +67,14 @@ def githubconnect():
     status = response.status
     if status != 200:
         return "There was a problem %s" % json.loads(content)['message']
-    # get list of non public e-mail addresses
+    # get list of non public e-mail addresses and store them in session
     emails = json.loads(content)
-    # Check if user exists in db
     email_addresses = [e['email'] for e in emails]
     login_session['emails'] = email_addresses
+    # Check if user exists in db
     for e in emails:
-        if e['primary']:
-            login_session['email'] = e['email']
         user_id = get_user_id(e['email'])
+        # If user exists, redirect to index page
         if user_id:
             user = get_user_info(user_id)
             login_session['email'] = e['email']
@@ -84,5 +85,5 @@ def githubconnect():
             db_session.commit()
             flash("Thanks for logging in, %s" % login_session['username'])
             return redirect('/')
-    login_session['emails'] = email_addresses
+    # If user doesn't exist, redirect to complete signup
     return redirect(url_for('complete_signup'))

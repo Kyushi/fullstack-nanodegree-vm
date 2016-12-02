@@ -1,3 +1,5 @@
+"""Google OAuth authentication"""
+
 import requests
 import json
 import httplib2
@@ -15,6 +17,8 @@ import pmoi_auth
 # Connect with Google+
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """Connect with Google Oauth API"""
+
     CLIENT_ID = json.loads(open('google_client_secrets.json','r').read())['web']['client_id']
     if request.args.get('state') != login_session['state']:
         response = "Invalid STATE parameter"
@@ -93,7 +97,7 @@ def gconnect():
 # User logout /disconnect Google Plus
 @app.route('/gdisconnect')
 def gdisconnect():
-    # Disconnect a logged in user
+    """Revoke Google OAuth access token"""
     access_token = login_session.get('access_token')
     if access_token is None:
         response = 'No user connected'

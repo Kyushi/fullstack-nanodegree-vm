@@ -65,8 +65,11 @@ def get_or_create_cat_zero():
     except NoResultFound:
         print "Category not found, creating cat_zero"
         cat_zero = Category(id=0,
-                          name="No Category",
-                          description="Catchall category for uncategorised items")
+                            name="No Category",
+                            description="Catchall category for uncategorised \
+                                        items",
+                            user_id=0,
+                            public=True)
         db_session.add(cat_zero)
         db_session.commit()
         print "cat_zero added"

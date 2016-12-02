@@ -111,7 +111,7 @@ def delete_user(user):
         db_session.delete(cat)
         db_session.commit()
     for cat in public_categories:
-        if not cat.items():
+        if not cat.items:
             db_session.delete(cat)
             db_session.commit()
         else:

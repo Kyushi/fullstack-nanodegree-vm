@@ -3,6 +3,8 @@
 ## Your Personal Museum of Inspiration ##
 
 ##### Save things that inspire you, add notes and share with the public or keep it just personal #####
+
+Version 0.1
 ___
 ### About ###
 

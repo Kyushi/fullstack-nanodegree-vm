@@ -1,16 +1,12 @@
+#!/usr/bin/env python
+"""Set up the app config, run server locally"""
+
 from pemoi import app
-# import secret
-from pemoi.config import SECRET, UPLOAD_FOLDER
 
-app.secret_key = SECRET
+# app.secret_key = app.config['SECRET_KEY']
 
 
-# Config upload folder
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
-
-
-# Start app
+# Start app locally
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

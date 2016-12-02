@@ -12,10 +12,9 @@
           <input type="text"
                  name="name"
                  class="form-control"
-                 value="{{category.name}}">
-          {% if error %}
-            <p>{{error}}</p>
-          {% endif %}
+                 value="{{category.name}}"
+                 id="newcategory">
+          <p class="error text-small" id="catname-warning"></p>
         </div>
         <div class="form-group">
           <label for="description">
@@ -32,6 +31,7 @@
             <input type="checkbox"
                    name="public"
                    value="True"
+                   id="new-public"
                    {% if category.public %}
                     checked
                    {% endif %}
@@ -43,7 +43,7 @@
           </label>
         </div>
         <div class="form-group">
-          <input type="submit" value="Save" class="submit">
+          <input type="submit" value="Save" class="submit" id="submit">
         </div>
       </form>
     </div>

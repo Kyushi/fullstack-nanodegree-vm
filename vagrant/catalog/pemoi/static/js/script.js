@@ -108,20 +108,28 @@ $(".close").on("click", function() {
 });
 
 // Check if public category exists upon input
-$("#new-public").on("change", function(){
-  if (this.checked) {
+function catNameCheck() {
+  if ($("#new-public").prop("checked")) {
     $catname = $("#newcategory").val();
     console.log($catname);
+    console.log(jQuery.type($catname))
     $.ajax({
       type: 'POST',
       url: '/checkcatname',
-      data: $catname,
+      data: JSON.stringify($catname),
+      contentType: 'application/json; charset=utf-8',
       success: function(result) {
         console.log(result)
         if(result != "OK"){
-          $("#catname-warning").html("A public category with this name already exists. Please choose a different name.");
+          $("#catname-warning").html("A public category with this name already \
+                                      exists. Please choose a different name.");
           $("#submit").prop("disabled", true);
           $("#submit").css("background-color", "#aaa")
+        }
+        else {
+          $("#catname-warning").html("");
+          $("#submit").prop("disabled", false);
+          $("#submit").css("background-color", "");
         }
       }
     });
@@ -131,4 +139,7 @@ $("#new-public").on("change", function(){
     $("#submit").prop("disabled", false);
     $("#submit").css("background-color", "");
   }
-});
+}
+
+$("#new-public").on("change", catNameCheck);
+$("#newcategory").on("blur", catNameCheck);

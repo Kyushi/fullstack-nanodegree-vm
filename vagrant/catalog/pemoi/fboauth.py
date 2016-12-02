@@ -1,4 +1,4 @@
-__author__ = 'Akechi'
+"""Facebook OAuth authentication"""
 
 import httplib2
 import json
@@ -16,9 +16,13 @@ import pmoi_auth
 # Connect with Facebook
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
+    """Connect to facebook OAuth API"""
+
+    # Compare and validate STATE parameter, return error if invalid
     if request.args.get('state') != login_session['state']:
         response = "Invalid STATE parameter"
         return json_response(response, 401)
+
     access_token = request.data
 
     # Exchange client token for long-lived server side token
@@ -30,12 +34,13 @@ def fbconnect():
 
     # Use token to get user info
     userinfo_url = 'https://graph.facebook.com/v2.8/me'
-    # strip expire tag from token
+    # Strip expire tag from token
     token = result.split('&')[0]
     url = 'https://graph.facebook.com/v2.8/me?%s&fields=name,id,email' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
+    # Store user info in session
     login_session['provider'] = 'Facebook'
     login_session['name'] = data['name']
     login_session['email'] = data['email']
@@ -48,7 +53,7 @@ def fbconnect():
     login_session['picture'] = data['data']['url']
     # Check if user exists in db
     user_id = pmoi_auth.get_user_id(login_session['email'])
-    # if not, make js redirect to comeplete signup
+    # if not, redirect to complete signup
     if not user_id:
         return "new"
     # If yes, get user info from db and welcome user, redirect handled by js
@@ -61,6 +66,7 @@ def fbconnect():
 # Facebook disconnect function
 @app.route('/fbdisconnect')
 def fbdisconnect():
+    """Disconnect facebook session"""
     facebook_id = login_session['facebook_id']
     url = 'https://graph.facebook.com/%s/permissions' % facebook_id
     h = httplib2.Http()

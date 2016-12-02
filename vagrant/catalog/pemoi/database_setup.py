@@ -1,3 +1,5 @@
+"""Set up the database, create tables User, Category, Items"""
+
 from sqlalchemy import Column, \
                        ForeignKey, \
                        Integer, \
@@ -24,8 +26,6 @@ class User(Base):
     picture: Link to profile picture
     about: Text about  the user, i.e. info about self
     register_date: DateTime of user registration, gets added automatically
-
-    All columns are required or auto-generated
     """
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
@@ -51,6 +51,8 @@ class Category(Base):
     add_date: DateTime of addition, auto-generated
     public: Boolean, so that the user can decide whether or not to make a
             category public (private is default)
+
+    The following fields have to be provided: name, user_id, public
     """
     __tablename__ = "category"
     id = Column(Integer, primary_key=True)
@@ -77,7 +79,9 @@ class Category(Base):
             }
 
     def allow_private(self):
-        """Check if category has items other than user's own, if yes, don't
+        """Check if category is allowed as private
+
+        Check if category has items other than user's own, if yes, don't
         allow setting it to private"""
         allow = True
         for item in self.items:
@@ -136,6 +140,6 @@ class Item(Base):
             }
 
 
-engine = create_engine('sqlite:///pemoi.db')
+engine = create_engine('sqlite:///../pemoi.db')
 
 Base.metadata.create_all(engine)

@@ -76,8 +76,9 @@ def new_item():
             link = check_img_link(request.form.get('link'))
         if request.form['category'] == '0' and request.form['newcategory']:
             public = request.form.get('public-category')
-            if name_exists(request.form['newcategory'], public):
-                # TODO: proper return, js test, ajax warning
+            if public and name_exists(request.form['newcategory']):
+                # Submit is disabled and an error shown via ajax, but we keep
+                # this just in case
                 return "This public category exists already"
             category = Category(name=request.form['newcategory'],
                                 user_id=login_session['user_id'],
@@ -120,7 +121,6 @@ def edit_item(item_id):
         flash("This item does not exist")
         return redirect('/')
     if request.method == 'POST' and item.user_id == login_session['user_id']:
-        item.link = request.form['link']
         item.title = request.form['title']
         item.artist = request.form['artist']
         item.note = request.form['note']
@@ -149,10 +149,10 @@ def delete_item(item_id):
         return redirect ('/')
     if item.user_id != login_session['user_id']:
         flash("You can only delete your own items!<br>")
-        return redirect(url_for('show_item', item_id=item_id))
+        return redirect(url_for('show_item', item_id=item.id))
     if request.method == 'POST':
         delete_file_and_row(item)
-        flash("Item %s deleted!" % item_title)
+        flash("Item %s deleted!" % item.title)
         return redirect('/')
     else:
         return render_template('deleteitem.html',

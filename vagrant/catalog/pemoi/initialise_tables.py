@@ -19,18 +19,6 @@ categories = db_session.query(Category).all()
 items = db_session.query(Item).all()
 users = db_session.query(User).all()
 
-# email = raw_input("Please enter your e-mail address")
-#
-#
-# admin = User(name = "Admin",
-#              username = "Admin",
-#              email = email,
-#              about = "Admin of PeMoI")
-
-# db_session.add(admin)
-# db_session.commit()
-# db_session.refresh(admin)
-# print admin, vars(admin)
 admin = db_session.query(User).filter_by(name="Admin").one()
 
 def populate_categories(cats):
