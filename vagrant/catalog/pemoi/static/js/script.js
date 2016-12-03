@@ -110,13 +110,20 @@ $(".close").on("click", function() {
 // Check if public category exists upon input
 function catNameCheck() {
   if ($("#new-public").prop("checked")) {
-    $catname = $("#newcategory").val();
-    console.log($catname);
-    console.log(jQuery.type($catname))
+    $catName = $("#newcategory").val();
+    if ($("#cat-id").length) {
+      $catId = $("#cat-id").val()
+      $data = {catname: $catName, catid: $catId}
+    }
+    else {
+      $data = {catname: $catName}
+    }
+    console.log($data);
+    console.log(jQuery.type($data))
     $.ajax({
       type: 'POST',
       url: '/checkcatname',
-      data: JSON.stringify($catname),
+      data: JSON.stringify($data),
       contentType: 'application/json; charset=utf-8',
       success: function(result) {
         console.log(result)

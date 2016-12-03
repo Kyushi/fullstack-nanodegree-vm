@@ -1,8 +1,9 @@
+"""Varous helper functions that do not require a route."""
+
 import random
 import string
 import json
 import re
-
 
 from flask import make_response
 from sqlalchemy.orm.exc import NoResultFound
@@ -23,10 +24,22 @@ def json_response(response_string, code):
 
 # Generate a state for oauth
 def make_state():
-    return ''.join(random.choice(string.ascii_letters + string.digits) for x in xrange(32))
+    """Create state parameter for OAuth.
+
+    Return: Random string of ascii letters and digits of length 32.
+    """
+    return ''.join(random.choice(string.ascii_letters + string.digits)\
+                   for x in xrange(32))
 
 # Verify user input
 def username_error(username):
+    """Verify username.
+
+    Argument: Username as string. Username must be between 5 and 20 characters
+        long, contain alphanumeric characters and '.', '-', '_' only. Must be
+        unique.
+    Return: Error message or None.
+    """
     if not (len(username) >= 5 and len(username) <= 20):
         return "Bad length: %d (must be between 5 and 20)" % len(username)
     if not re.match(r'^[\w.-]+$', username):
@@ -39,16 +52,24 @@ def username_error(username):
 
 # Get user by username
 def get_user_by_username(username):
+    """Get user object from database by username.
+
+    Argument: Username as string.
+    Return: User object or None.
+    """
     try:
         user = db_session.query(User).filter_by(username=username).one()
-        print "User found: %s" % user.username
         return user
     except NoResultFound as err:
-        print "%s is a new username" % username
         return None
 
 # make sure link is an image
 def check_img_link(link):
+    """Verify image link.
+
+    Argument: Link as string. Link must end with "jpg", "jpeg", "png" or "gif".
+    Return: Link or None.
+    """
     allowed_img = ('jpg', 'jpeg', 'png', 'gif')
     if '.' in link:
         splitlink = link.split('.')
@@ -56,8 +77,13 @@ def check_img_link(link):
             return link
     return None
 
-# get or create catchall category from database
 def get_or_create_cat_zero():
+    """Check if a category with ID 0 exists in db, create one if not.
+
+    Category 0 serves as a catchall category in case a user forgets to select a
+    category when registering a new item. The category is required as a foreign
+    key for item objects.
+    """
     try:
         cat_zero = db_session.query(Category).filter_by(id=0).one()
         print "Found cat_zero, continue"
@@ -76,6 +102,12 @@ def get_or_create_cat_zero():
         return cat_zero
 
 def get_or_create_admin():
+    """Check if an admin user with id 0 is registered, create if not.
+
+    The admin account is required, so that when a user wants to delete their
+    account but they own a public category with other users' items in them,
+    this category will not be without user_id (foreign key requirement).
+    """
     try:
         admin = db_session.query(User).filter_by(id=0).one()
         print "Admin account exists, show page normally"

@@ -1,3 +1,4 @@
+"""Init file for package. Create flask app."""
 from flask import Flask
 
 app = Flask(__name__)
@@ -15,6 +16,7 @@ import pemoi.pmoi_item
 import pemoi.pmoi_user
 import pemoi.pmoi_helpers
 
+# Make sure that admin and category 0 exist when starting the app.
 admin = pemoi.pmoi_helpers.get_or_create_admin()
 cat_zero = pemoi.pmoi_helpers.get_or_create_cat_zero()
 

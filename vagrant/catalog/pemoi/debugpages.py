@@ -1,10 +1,9 @@
-__author__ = 'Akechi'
 from flask import session as login_session, render_template
 from pmoi_db_session import db_session
 from pemoi import app
 from database_setup import Item
 
-### TODO: Remove before going live! not for production ###
+### TODO: Remove before going live! not for production (remove via git) ###
 # Force clear old db_session
 @app.route('/clearSession')
 def clearSession():
