@@ -2,6 +2,7 @@
 
   <ul class="menu-ul col-xs-12">
     <li class="menu-li"><a href="{{url_for('index')}}">Home</a></li>
+    <!-- User dropdown section -->
     {% if 'user_id' in session %}
     <li class="menu-li holds-sub">
       <a href="{{url_for('show_profile', user_id=session['user_id'])}}"
@@ -30,6 +31,7 @@
       </ul>
     </li>
     {% endif %}
+    <!-- Categories dropdown -->
     {% if categories %}
     <li class="menu-li holds-sub">
       <a href="{{url_for('show_categories')}}" class="menu-link">Categories</a>

@@ -1,15 +1,3 @@
-// github oauth signin
-function githubOAuth() {
-  console.log("Function githubOAuth called");
-  $url = "https://github.com/login/oauth/authorize?client_id=d6957d4007ba48103730&scope=user:email&state=" + $state
-  console.log($url);
-  $.get($url, function(data, status){
-    console.log(data, status);
-  });
-}
-
-
-
 // Google oauth signin
 function signInCallback(authResult){
   if(authResult['code']) {
@@ -22,7 +10,6 @@ function signInCallback(authResult){
       data: authResult['code'],
       success: function(result) {
         if (result) {
-          // console.log(result);
           if (result != "new") {
             $('#result').html('Login successful for:<br>' + result + '<br>Redirecting to start page ...')
             setTimeout(function() {
@@ -107,33 +94,38 @@ $(".close").on("click", function() {
   $(this).parent().remove();
 });
 
-// Check if public category exists upon input
+// Function to check if public category exists already
 function catNameCheck() {
+  // If "make public" is checked, check for duplicate name
   if ($("#new-public").prop("checked")) {
     $catName = $("#newcategory").val();
+    // If we're on the edit category name page, pass category id to backend
     if ($("#cat-id").length) {
       $catId = $("#cat-id").val()
       $data = {catname: $catName, catid: $catId}
     }
+    // If not editing category name, there is no ID to pass
     else {
       $data = {catname: $catName}
     }
-    console.log($data);
-    console.log(jQuery.type($data))
+    // Use Ajax to check category name in the background.
     $.ajax({
       type: 'POST',
       url: '/checkcatname',
       data: JSON.stringify($data),
       contentType: 'application/json; charset=utf-8',
       success: function(result) {
-        console.log(result)
         if(result != "OK"){
+          // If the public category already exists, disable submit and display
+          // error.
           $("#catname-warning").html("A public category with this name already \
                                       exists. Please choose a different name.");
           $("#submit").prop("disabled", true);
           $("#submit").css("background-color", "#aaa")
         }
         else {
+          // If all is good, make sure submit is enabled and everything looks
+          // normal
           $("#catname-warning").html("");
           $("#submit").prop("disabled", false);
           $("#submit").css("background-color", "");
@@ -142,11 +134,15 @@ function catNameCheck() {
     });
   }
   else {
+    // If "make public" is not checked, make sure that form looks normal and
+    // submit is enabled.
     $("#catname-warning").html("");
     $("#submit").prop("disabled", false);
     $("#submit").css("background-color", "");
   }
 }
 
+// Trigger above function on either clicking the checkbox or leaving the text
+// input field.
 $("#new-public").on("change", catNameCheck);
 $("#newcategory").on("blur", catNameCheck);

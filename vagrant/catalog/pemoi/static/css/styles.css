@@ -1,4 +1,4 @@
-/* Variables */
+/* Colours */
 /* Fonts */
 /* Default styles */
 html, body {
@@ -6,13 +6,17 @@ html, body {
 
 body {
   font-family: Khula, sans-serif;
-  /*font-size: 14px;*/
   line-height: normal;
   vertical-align: baseline;
   background: #010101;
   background: linear-gradient(#1b1b1b, #010101);
   color: #a69989; }
 
+.container {
+  background: #fff;
+  min-height: 100%; }
+
+/* Links */
 a {
   color: #D3900F;
   text-decoration: none; }
@@ -20,6 +24,7 @@ a {
 a:hover {
   text-decoration: underline; }
 
+/* Headers */
 h1 {
   color: #010101;
   font-size: 36px;
@@ -48,14 +53,10 @@ h4 {
 p {
   margin: 0; }
 
-.container {
-  background: #fff;
-  min-height: 100%; }
-
 .text-right {
   text-align: right; }
 
-.text-center {
+.center {
   text-align: center; }
 
 .text-small {
@@ -70,6 +71,7 @@ p {
 .explanation {
   text-align: left; }
 
+/* Page header and title styling */
 header {
   padding-top: 1em;
   border-bottom: 1px solid #010101; }
@@ -101,6 +103,7 @@ header {
 .login-link:after {
   clear: both; }
 
+/* Flash messages */
 .message-flash {
   color: #fff;
   text-align: center;
@@ -127,46 +130,7 @@ header {
 .close:after {
   clear: right; }
 
-input,
-textarea {
-  border-radius: 0.333em;
-  border: solid 1px #D3900F; }
-
-form {
-  padding: 0.667em; }
-
-.submit {
-  background: #fff;
-  padding: 0.5em 0.667em 0.333em 0.667em;
-  line-height: 1; }
-
-.submit:hover {
-  background: #D3900F;
-  color: #fff; }
-
-.profile-pic-preview {
-  max-width: 100%; }
-
-.profile-pic-frame {
-  width: 35px;
-  height: 35px;
-  overflow: hidden;
-  float: left;
-  margin-right: 1em; }
-
-.profile-pic-frame:after {
-  clear: both; }
-
-.profile-pic-frame-big {
-  max-width: 500px;
-  overflow: hidden; }
-
-.profile-pic {
-  width: 50px; }
-
-.user-box {
-  margin: 0.33em; }
-
+/* Menu styling */
 .menu-ul,
 .submenu {
   list-style: none;
@@ -207,6 +171,60 @@ form {
   height: 100%;
   padding: 0.33em; }
 
+/* Form styling on top of Bootstrap forms */
+input,
+textarea {
+  border-radius: 0.333em;
+  border: solid 1px #D3900F; }
+
+form {
+  padding: 0.667em; }
+
+.submit {
+  background: #fff;
+  padding: 0.5em 0.667em 0.333em 0.667em;
+  line-height: 1; }
+
+.submit:hover {
+  background: #D3900F;
+  color: #fff; }
+
+.form-horizontal .form-group {
+  margin-left: 0;
+  margin-right: 0; }
+
+/* Profile related styling */
+figure {
+  margin-bottom: 1em; }
+
+figcaption {
+  font-size: 1.5em;
+  color: #010101; }
+
+.profile-pic-preview {
+  max-width: 100%; }
+
+.profile-pic-frame {
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  float: left;
+  margin-right: 1em; }
+
+.profile-pic-frame:after {
+  clear: both; }
+
+.profile-pic-frame-big {
+  max-width: 500px;
+  overflow: hidden; }
+
+.profile-pic {
+  width: 50px; }
+
+.user-box {
+  margin: 0.33em; }
+
+/* Main page styling */
 .item-img {
   max-width: 100%; }
 
@@ -216,6 +234,7 @@ form {
   padding: 1.33em;
   margin-bottom: 0.67em; }
 
+/* Category styling */
 .form-box,
 .profile-box,
 .category-box,
@@ -239,16 +258,7 @@ form {
   padding: 0.33em;
   text-align: center; }
 
-figure {
-  margin-bottom: 1em; }
-
-figcaption {
-  font-size: 1.5em;
-  color: #010101; }
-
-.center {
-  text-align: center; }
-
+/* Login styling */
 .login-box {
   width: 100%;
   margin: 1em 0; }
@@ -256,9 +266,5 @@ figcaption {
 .login-result {
   background: #AD2B00;
   color: #fff; }
-
-.form-horizontal .form-group {
-  margin-left: 0;
-  margin-right: 0; }
 
 /*# sourceMappingURL=styles.css.map */

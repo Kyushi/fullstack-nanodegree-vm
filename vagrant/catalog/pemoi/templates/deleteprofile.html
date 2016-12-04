@@ -5,6 +5,7 @@
   <div class="col-xs-12">
     <div class="form-box">
       <form action="{{url_for('delete_profile', user_id=user.id)}}" method="POST">
+        <!-- Warning and explanation -->
         <h2>Are you sure that you want to delete your profile, {{user.name}}?</h2>
         <p>If you delete your profile, you will also permanently delete
           <ul class="note">
@@ -22,7 +23,7 @@
           You can always sign up again later.
         </p>
         <h3>Your categories and items:</h3>
-
+        <!-- Show user their private categories -->
         <div class="categories">
           <h4>These are your private categories:</h4>
           {% if my_categories %}
@@ -33,7 +34,7 @@
             <p>You have no private categories</p>
           {% endif %}
         </div>
-
+        <!-- Show user their public categories -->
         <div class="categories">
           <h4>Public categories*:</h4>
           <p class="text-small">
@@ -48,7 +49,7 @@
             <p>You have no public categories</p>
           {% endif %}
         </div>
-
+        <!-- Present user their saved inspirations -->
         <div class="items">
           <h4>These are your items:</h4>
           {% if items %}
@@ -59,7 +60,7 @@
             <p>You haven't saved any inspirations</p>
           {% endif %}
         </div>
-
+        
         <input type="submit"
                value="I'm done with inspiration, delete this account forever"
                class="submit">

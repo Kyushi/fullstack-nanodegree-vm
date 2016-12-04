@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 
-
 <section class="userinfo row">
   <div class="col-xs-12">
     <div class="profile-box">
-      <h1>{{user.username}}'s profile {% if user.id == session['user_id'] %}(that's you){% endif %}</h1>
+      <h2>{{user.username}}'s profile {% if user.id == session['user_id'] %}(that's you){% endif %}</h2>
       <figure class="creator">
         <img src="{{user.picture}}" class="profile-pic-preview">
         <figcaption>{{user.username}}</figcaption>

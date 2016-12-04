@@ -2,12 +2,14 @@
 
 {% block content %}
 
-
 <section class="row">
   <div class="col-xs-12">
     <div class="form-box">
       {% if item %}
-        <form class="form-horizontal" method="POST" action="{{url_for('edit_item', item_id=item.id)}}" enctype=multipart/form-data>
+        <form class="form-horizontal"
+              method="POST"
+              action="{{url_for('edit_item', item_id=item.id)}}"
+              enctype=multipart/form-data>
 
           <div class="form-group">
             <img src="{{item.link}}" class="item-img">
