@@ -7,7 +7,7 @@ from sqlalchemy import desc
 
 from pemoi import app
 from database_setup import Item
-from pmoi_db_session import db_session
+from db_session import db_session
 
 @app.route('/')
 @app.route('/index/')

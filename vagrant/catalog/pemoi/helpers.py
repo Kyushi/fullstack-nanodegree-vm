@@ -7,7 +7,7 @@ import re
 
 from flask import make_response
 from sqlalchemy.orm.exc import NoResultFound
-from pmoi_db_session import db_session
+from db_session import db_session
 from database_setup import User, Category
 
 # Helper function for returning json

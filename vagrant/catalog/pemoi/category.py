@@ -9,7 +9,7 @@ from flask import flash, \
                   jsonify
 
 from database_setup import Category, Item
-from pmoi_db_session import db_session
+from db_session import db_session
 from pemoi import app
 
 ### Helpers for categories
@@ -118,7 +118,7 @@ def show_category(category_id):
                                 &((Item.public==True)\
                                 |(Item.user_id==user_id)))\
                                 .all()
-    return render_template('showcategory.html',
+    return render_template('categoryshow.html',
                             category=category,
                             items=items)
 
@@ -137,14 +137,14 @@ def new_category():
         if not category.name or (name_exists(category.name) and public):
             flash("""The category has no name or another public category
                     of the same name already exists.""")
-            return render_template('editcategory.html',
+            return render_template('categoryedit.html',
                                     category=category)
         db_session.add(category)
         db_session.commit()
         db_session.refresh(category)
         return redirect(url_for('show_category', category_id=category.id))
     else:
-        return render_template('newcategory.html')
+        return render_template('categorynew.html')
 
 @app.route('/category/<int:category_id>/edit/', methods={'GET', 'POST'})
 def edit_category(category_id):
@@ -170,14 +170,14 @@ def edit_category(category_id):
                 category.public = True
             if category.public and name_exists(name, category_id):
                 flash("This public category already exists")
-                return render_template('editcategory.html', category=category)
+                return render_template('categoryedit.html', category=category)
             category.name = name
             category.description = request.form['description']
             db_session.add(category)
             db_session.commit()
             return redirect("/category/%s" % category_id)
         else:
-            return render_template('editcategory.html',
+            return render_template('categoryedit.html',
                                     category=category)
 
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
@@ -204,5 +204,5 @@ def delete_category(category_id):
             db_session.commit()
             return redirect('/')
         else:
-            return render_template('deletecategory.html',
+            return render_template('categorydelete.html',
                                     category=category)

@@ -13,9 +13,9 @@ from flask import flash, \
 from werkzeug.utils import secure_filename
 from pemoi import app
 from database_setup import Item, Category
-from pmoi_db_session import db_session
-from pmoi_cat import name_exists
-from pmoi_helpers import check_img_link
+from db_session import db_session
+from category import name_exists
+from helpers import check_img_link
 
 # set allowed extensions for upload
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -48,7 +48,7 @@ def show_item(item_id):
         return redirect('/')
     # Make sure that user is authorised to see the item
     if item.public or item.user_id == login_session.get('user_id'):
-        return render_template('showitem.html', item=item)
+        return render_template('itemshow.html', item=item)
     else:
         flash("This item is not public and belongs to somebody else.")
         return redirect('/')
@@ -120,7 +120,7 @@ def new_item():
         flash("Inspiration successfully saved")
         return redirect(url_for('show_item', item_id=item.id))
     else:
-        return render_template('newitem.html')
+        return render_template('itemnew.html')
 
 
 # Edit an item
@@ -152,7 +152,7 @@ def edit_item(item_id):
         db_session.refresh(item)
         return redirect(url_for('show_item', item_id=item.id))
     else:
-        return render_template('edititem.html', item=item)
+        return render_template('itemedit.html', item=item)
 
 
 # delete an item
@@ -178,7 +178,7 @@ def delete_item(item_id):
         flash("Item %s deleted!" % item.title)
         return redirect('/')
     else:
-        return render_template('deleteitem.html',
+        return render_template('itemdelete.html',
                                item=item)
 
 

@@ -11,7 +11,7 @@ from sqlalchemy import Column, \
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-
+from pemoi import app
 Base = declarative_base()
 
 class User(Base):
@@ -140,6 +140,7 @@ class Item(Base):
             }
 
 
-engine = create_engine('sqlite:///../pemoi.db')
+engine = create_engine(app.config['DB_URI'],
+                       convert_unicode=True)
 
 Base.metadata.create_all(engine)

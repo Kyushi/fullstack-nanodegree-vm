@@ -8,9 +8,9 @@ from flask import session as login_session, \
                   redirect
 
 from pemoi import app
-from pmoi_helpers import make_state
-from pmoi_db_session import db_session
-from pmoi_helpers import username_error
+from helpers import make_state
+from db_session import db_session
+from helpers import username_error
 from database_setup import User
 from googleoauth import gdisconnect
 from fboauth import fbdisconnect

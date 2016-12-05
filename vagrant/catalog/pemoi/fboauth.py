@@ -9,9 +9,9 @@ from flask import request, \
 
 from pemoi import app
 
-from pmoi_helpers import json_response
+from helpers import json_response
 
-import pmoi_auth
+import authentication
 
 # Connect with Facebook
 @app.route('/fbconnect', methods=['POST'])
@@ -26,8 +26,8 @@ def fbconnect():
     access_token = request.data
 
     # Exchange client token for long-lived server side token
-    app_id = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app-id']
-    app_secret = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app-secret']
+    app_id = json.loads(open('cs_facebook.json', 'r').read())['web']['app-id']
+    app_secret = json.loads(open('cs_facebook.json', 'r').read())['web']['app-secret']
     url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
@@ -52,12 +52,12 @@ def fbconnect():
     data = json.loads(result)
     login_session['picture'] = data['data']['url']
     # Check if user exists in db
-    user_id = pmoi_auth.get_user_id(login_session['email'])
+    user_id = authentication.get_user_id(login_session['email'])
     # if not, redirect to complete signup
     if not user_id:
         return "new"
     # If yes, get user info from db and welcome user, redirect handled by js
-    user = pmoi_auth.get_user_info(user_id)
+    user = authentication.get_user_info(user_id)
     login_session['user_id'] = user.id
     login_session['username'] = user.username
     flash("Thanks for logging in, %s" % login_session['username'])

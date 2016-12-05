@@ -11,8 +11,8 @@ from flask import request, \
                   url_for
 
 from pemoi import app
-from pmoi_auth import get_user_info, get_user_id
-from pmoi_db_session import db_session
+from authentication import get_user_info, get_user_id
+from db_session import db_session
 
 
 # Connect with github
@@ -29,8 +29,8 @@ def githubconnect():
     # Code is received from github
     code = request.args.get('code')
     # Load client id and secret from file
-    client_id = json.loads(open('github_client_secrets.json', 'r').read())['web']['client_id']
-    client_secret = json.loads(open('github_client_secrets.json', 'r').read())['web']['client_secret']
+    client_id = json.loads(open('cs_github.json', 'r').read())['web']['client_id']
+    client_secret = json.loads(open('cs_github.json', 'r').read())['web']['client_secret']
     # Get parameters ready for requesting access token
     params = {'code': code, 'client_id': client_id, 'client_secret': client_secret, 'state':state}
     # Set headers to receive json encoded data

@@ -9,11 +9,10 @@ from flask import render_template, \
                   session as login_session
 
 from pemoi import app
-from pmoi_auth import get_user_info
-from pmoi_helpers import username_error
-from pmoi_cat import get_categories
-from pmoi_db_session import db_session
-from pmoi_item import delete_file_and_row
+from authentication import get_user_info
+from helpers import username_error
+from db_session import db_session
+from item import delete_file_and_row
 from database_setup import Category, Item, User
 
 @app.route('/profile/<int:user_id>/')
@@ -53,7 +52,7 @@ def edit_profile(user_id):
             error = username_error(username)
             if error:
                 flash(error)
-                return render_template('editprofile.html',
+                return render_template('profileedit.html',
                                        user=user)
         try:
             # Rename the user's upload directory.
@@ -72,7 +71,7 @@ def edit_profile(user_id):
         db_session.commit()
         return redirect(url_for('show_profile', user_id=user.id))
     else:
-        return render_template('editprofile.html', user=user)
+        return render_template('profileedit.html', user=user)
 
 @app.route('/profile/<int:user_id>/delete/', methods=['GET', 'POST'])
 def delete_profile(user_id):
@@ -98,7 +97,7 @@ def delete_profile(user_id):
         flash("We are crying bitter tears to see you leaving. Please come back one day.")
         return redirect('/')
     else:
-        return render_template('deleteprofile.html',
+        return render_template('profiledelete.html',
                                user=user,
                                my_categories=get_user_categories(user.id,
                                                                  False),

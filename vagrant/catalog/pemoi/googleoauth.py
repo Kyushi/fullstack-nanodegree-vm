@@ -11,15 +11,15 @@ from flask import request, \
                   session as login_session
 
 from pemoi import app
-from pmoi_helpers import json_response, make_response
-import pmoi_auth
+from helpers import json_response, make_response
+import authentication
 
 # Connect with Google+
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     """Connect with Google Oauth API"""
 
-    CLIENT_ID = json.loads(open('google_client_secrets.json','r').read())['web']['client_id']
+    CLIENT_ID = json.loads(open('cs_google.json','r').read())['web']['client_id']
     if request.args.get('state') != login_session['state']:
         response = "Invalid STATE parameter"
         return json_response(response, 401)
@@ -27,7 +27,7 @@ def gconnect():
     code = request.data
     try:
         # Upgrade the auth code into a credentials object
-        oauth_flow = flow_from_clientsecrets('google_client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('cs_google.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
@@ -84,11 +84,11 @@ def gconnect():
     login_session['email'] = data['email']
 
     # Check if user exists in database
-    user_id = pmoi_auth.get_user_id(login_session['email'])
+    user_id = authentication.get_user_id(login_session['email'])
     if not user_id:
         return "new"
     # If yes, get user info from db and welcome user, redirect handled by js
-    user = pmoi_auth.get_user_info(user_id)
+    user = authentication.get_user_info(user_id)
     login_session['user_id'] = user.id
     login_session['username'] = user.username
     flash("Thanks for logging in, %s" % login_session['username'])
