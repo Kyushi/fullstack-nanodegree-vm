@@ -18,7 +18,8 @@ ___
 - Python 2.7
 - Web browser
 - Shell
-- Google, Facebook or github account
+- Google, Facebook and github account
+- Client secrets and app IDs for Facebook, github and Google OAuth api.
 
 ### Dependencies ###
 
@@ -30,10 +31,15 @@ ___
 
 ### Quickstart ###
 
-- Clone repository: `git clone https://github.com/Kyushi/fullstack-nanodegree-vm.git`.
-
+1. Clone repository: `git clone https://github.com/Kyushi/fullstack-nanodegree-vm.git`.
+- In your shell, type `cd fullstack-nanodegree-vm/vagrant/catalog/` to get to the project directory.
+- Copy your client secrets and client ids into the skeleton secret files: `cs_github.json, cs_facebook.json and cs_google.json` (will be provided in the notes to reviewer)
+- Start `vagrant` (`vagrant up`). This may take a while.
+- Start vagrant shell (`vagrant ssh`)
+- Go to the shared folder (`cd /vagrant/catalog`)
 - After installation of the required modules, run `python runserver.py`
 - The required database `pemoi.db` will be created at root level
+- An Admin user and a category zero are created. These serve to catch orphaned categories or items respectively.
 - Use your browser to open `localhost:5000`
 
 You will find an empty page. Use the 'login or sign up' link at the top right to sign up with one of the possible OAuth services. After your initial sign up, you will be redirected to a sign up page to complete your registration. You can now create a new category or save a new image (you can create a category at this point as well).
