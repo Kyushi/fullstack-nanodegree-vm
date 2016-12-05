@@ -96,7 +96,7 @@ def delete_profile(user_id):
         if not deleted:
             flash("Oh. Looks like there was a problem with this. Please contact\
                    the site admin")
-            return redirect(url_for('delete_profile'), user.id)
+            return redirect(url_for('delete_profile'), user_id=user.id)
         flash("We are crying bitter tears to see you leaving. Please come back one day.")
         return redirect('/')
     else:
