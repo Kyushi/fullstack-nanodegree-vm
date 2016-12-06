@@ -5,10 +5,17 @@ import string
 import json
 import re
 
-from flask import make_response
+from functools import wraps
+from datetime import datetime
+from flask import make_response, \
+                  session as login_session, \
+                  flash, \
+                  redirect, \
+                  url_for
 from sqlalchemy.orm.exc import NoResultFound
 from db_session import db_session
 from database_setup import User, Category
+from pemoi import app
 
 # Helper function for returning json
 def json_response(response_string, code):
@@ -113,7 +120,7 @@ def get_or_create_admin():
         print "Admin account exists, show page normally"
         return admin
     except NoResultFound:
-        print "No admin found, cerating admin account"
+        print "No admin found, creating admin account"
         admin = User(id=0,
                      name="Admin",
                      username="Admin",
@@ -124,3 +131,26 @@ def get_or_create_admin():
         db_session.commit()
         print "Admin created"
         return admin
+
+# Prevent TypeError when trying to serialise a datetime object
+def json_serial(obj):
+    """JSON serialiser for datetime objects.
+
+    Argument: Object
+    Return: Serialised datetime object or TypeError
+    """
+    if isinstance(obj, datetime):
+        serial = obj.isoformat()
+        return serial
+    raise TypeError ("Cannot serialise type %s") % type(obj)
+
+# Decorator for required login
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' in login_session:
+            return f(*args, **kwargs)
+        else:
+            flash("Please log in to access this page.")
+            return redirect(url_for('login'))
+    return decorated_function

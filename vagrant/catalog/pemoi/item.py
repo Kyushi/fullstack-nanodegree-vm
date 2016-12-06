@@ -1,21 +1,21 @@
 """Module for all pages regarding items."""
 import os
 
+import json
 from flask import flash, \
                   redirect, \
                   render_template, \
                   url_for, \
                   request, \
                   session as login_session, \
-                  send_from_directory, \
-                  jsonify
+                  send_from_directory
 
 from werkzeug.utils import secure_filename
 from pemoi import app
 from database_setup import Item, Category
 from db_session import db_session
 from category import name_exists
-from helpers import check_img_link
+from helpers import check_img_link, json_serial, login_required
 
 # set allowed extensions for upload
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -35,7 +35,10 @@ def allowed_file(filename):
 def item_json(item_id):
     """Provide JSON endpoint for an individual item."""
     item = db_session.query(Item).filter_by(id=item_id).one()
-    return jsonify(item.serialize)
+    return json.dumps(item.serialize,
+                      default=json_serial,
+                      sort_keys=True,
+                      indent=4)
 
 # Show an individual item
 @app.route('/inspiration/<int:item_id>/', methods=['GET', 'POST'])
@@ -55,14 +58,13 @@ def show_item(item_id):
 
 # Create a new item
 @app.route('/inspiration/new/', methods=['GET', 'POST'])
+@login_required
 def new_item():
     """Create a new item.
 
     Logged in users can create new items. Items can be image links or uploaded
     image files.
     """
-    if not 'user_id' in login_session:
-        return redirect(url_for('login'))
     if request.method == 'POST':
         link = ''
         file = request.files['file']
@@ -125,14 +127,13 @@ def new_item():
 
 # Edit an item
 @app.route('/inspiration/<int:item_id>/edit/', methods=['GET', 'POST'])
+@login_required
 def edit_item(item_id):
     """Edit an item's properties.
 
     The item's owner can change an item's title, artist name, keywords, user
     note and category, and toggle between public and private.
     """
-    if not 'user_id' in login_session:
-        return redirect(url_for('login'))
     try:
         item = db_session.query(Item).filter_by(id=item_id).one()
     except:
@@ -157,13 +158,12 @@ def edit_item(item_id):
 
 # delete an item
 @app.route('/inspiration/<int:item_id>/delete/', methods=['GET', 'POST'])
+@login_required
 def delete_item(item_id):
     """Delete an item.
 
     A user can delete their own items.
     """
-    if not 'user_id' in login_session:
-        return redirect(url_for('login'))
     try:
         item = db_session.query(Item).filter_by(id=item_id).one()
     except:

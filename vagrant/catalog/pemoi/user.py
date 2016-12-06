@@ -15,7 +15,7 @@ from database_setup import Category, Item, User
 from db_session import db_session
 from fboauth import fbdisconnect
 from googleoauth import gdisconnect
-from helpers import username_error
+from helpers import username_error, login_required
 from item import delete_file_and_row
 
 @app.route('/profile/<int:user_id>/')
@@ -31,14 +31,13 @@ def show_profile(user_id):
 
 
 @app.route('/profile/<int:user_id>/edit/', methods=['GET', 'POST'])
+@login_required
 def edit_profile(user_id):
     """Edit a user's information.
 
     Users can edit the information that they have entered on our site:
     Username, and 'about'.
     """
-    if 'user_id' not in login_session:
-        return redirect('/login')
     if user_id != login_session['user_id']:
         flash("You can only edit your own profile")
         return redirect(url_for('show_profile', user_id=user_id))
@@ -77,6 +76,7 @@ def edit_profile(user_id):
         return render_template('profileedit.html', user=user)
 
 @app.route('/profile/<int:user_id>/delete/', methods=['GET', 'POST'])
+@login_required
 def delete_profile(user_id):
     """Delete a user profile.
 
@@ -85,8 +85,6 @@ def delete_profile(user_id):
     will be deleted, public categories with other users' items in them are
     adopted by the admin.
     """
-    if not 'user_id' in login_session:
-        return redirect(url_for('login'))
     if user_id != login_session["user_id"]:
         flash("You can only delete your own profile.")
         return redirect(url_for('index'))

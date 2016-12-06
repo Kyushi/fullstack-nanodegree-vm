@@ -1,15 +1,16 @@
 """Module to handle all things category."""
 
+import json
 from flask import flash, \
                   render_template, \
                   redirect, \
                   request, \
                   url_for, \
-                  session as login_session, \
-                  jsonify
+                  session as login_session
 
 from database_setup import Category, Item
 from db_session import db_session
+from helpers import json_serial, login_required
 from pemoi import app
 
 ### Helpers for categories
@@ -59,13 +60,19 @@ def get_categories(only_own=False):
 def category_json(category_id):
     """Return a category in JSON format"""
     items = db_session.query(Item).filter_by(category_id=category_id).all()
-    return jsonify(CategoryItems = [i.serialize for i in items])
+    return json.dumps([i.serialize for i in items],
+                      default=json_serial,
+                      sort_keys=True,
+                      indent=4)
 
 @app.route('/categories/json/')
 def categories_json():
     """Return all public categories in JSON format"""
     categories = db_session.query(Category).all()
-    return jsonify(Categories = [c.serialize for c in categories])
+    return json.dumps([c.serialize for c in categories],
+                      default=json_serial,
+                      sort_keys=True,
+                      indent=4)
 
 # Routes
 
@@ -87,11 +94,9 @@ def show_categories():
     return render_template('categories.html')
 
 @app.route('/inspiration/myinspirations/')
+@login_required
 def show_own():
     """Show user's own categories."""
-    if not 'user_id' in login_session:
-        flash("Please log in to view your items")
-        return redirect(url_for('login'))
     items = db_session.query(Item).filter_by(user_id=login_session['user_id'])\
             .all()
     return render_template('index.html', items=items)
@@ -123,10 +128,9 @@ def show_category(category_id):
                             items=items)
 
 @app.route('/category/new/', methods=['GET', 'POST'])
+@login_required
 def new_category():
     """Create new category or render page for submiting a new category"""
-    if 'user_id' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         public = True if request.form.get('public') else False
         category = Category(name=request.form['name'],
@@ -147,6 +151,7 @@ def new_category():
         return render_template('categorynew.html')
 
 @app.route('/category/<int:category_id>/edit/', methods={'GET', 'POST'})
+@login_required
 def edit_category(category_id):
     """Edit category or render page for editing category"""
     try:
@@ -154,11 +159,8 @@ def edit_category(category_id):
     except:
         flash("This category does not exist yet")
         return redirect('/')
-    if 'user_id' not in login_session:
-        flash("Please log in to edit categories.")
-        return redirect('/login')
     # Make sure that user can only their own categories
-    elif login_session['user_id'] != category.user_id:
+    if login_session['user_id'] != category.user_id:
         flash("You can only edit categories that you have created yourself")
         return redirect("/category/%s" % category_id)
     else:
@@ -181,6 +183,7 @@ def edit_category(category_id):
                                     category=category)
 
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
+@login_required
 def delete_category(category_id):
     """Delete a category or render page for category deletion"""
     try:
@@ -188,10 +191,7 @@ def delete_category(category_id):
     except:
         flash("This category does not exist yet")
         return redirect('/')
-    if 'user_id' not in login_session:
-        flash("Please log in to delete categories.")
-        return redirect('/login')
-    elif login_session['user_id'] != category.user_id:
+    if login_session['user_id'] != category.user_id:
         flash("You can only delete categories that you have created yourself")
         return redirect("/category/%s" % category_id)
     elif category.items:
